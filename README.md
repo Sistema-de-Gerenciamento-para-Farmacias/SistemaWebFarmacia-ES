@@ -66,9 +66,9 @@ Este projeto está organizado nas seguintes pastas:
     *   **`back/src/`**: Código principal da API e regras de negócio.
     *   **`back/config/`**: Arquivos de configuração do servidor e banco de dados.
 
-*   **`docs/padroes/`**: Documentação dos **padrões adotados** no projeto.
+*   **`Padroes Adotados/`**: Documentação dos **padrões adotados** no projeto.
 
-*   **`docs/requisitos/`**: Documentação dos **requisitos do sistema**.
+*   **`Requisitos/`**: Documentação dos **requisitos do sistema**.
 
 ### 👥 Membros da Equipe
 -	Matheus Gomes Monteiro, 202410369
