@@ -57,10 +57,16 @@ http://localhost:5173
 Este projeto está organizado nas seguintes pastas:
 ## Estrutura de Pastas
 
-*   **`front/`**: Contém o código-fonte da aplicação **Front-End** (React).
-    *   **`front/src/`**: Código principal da interface.
-    *   **`front/public/`**: Arquivos estáticos e HTML inicial.
-    *   **`front/assets/`**: Recursos visuais (imagens, ícones, estilos).
+* **`front/`**: Contém o código-fonte da aplicação **Front-End** (React).
+  * **`front/src/`**: Código principal da interface.
+    * **`front/src/assets/`**: Recursos visuais (imagens, ícones).
+    * **`front/src/pages/`**: Páginas da aplicação, cada uma em sua própria pasta.
+    * **`front/src/components/`**: Componentes reutilizáveis (botões, inputs, etc).
+    * **`front/src/context/`**: Contextos globais (ex.: autenticação).
+    * **`front/src/services/`**: Serviços de API ou mocks.
+    * **`front/src/utils/`**: Funções auxiliares.
+  * **`front/public/`**: Arquivos estáticos e HTML inicial.
+
 
 *   **`back/`**: Contém o código-fonte da aplicação **Back-End** (Spring Boot).
     *   **`back/src/`**: Código principal da API e regras de negócio.
