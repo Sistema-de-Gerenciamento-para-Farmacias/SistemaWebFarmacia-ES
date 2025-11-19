@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* centraliza verticalmente */
+  align-items: center;       /* centraliza horizontalmente */
+  height: 100vh;             /* ocupa toda a altura */
+  width: 100%;               /* ocupa toda a largura */
+  background-color: #f5f5f5; /* fundo cinza claro */
+  text-align: center;
+}
