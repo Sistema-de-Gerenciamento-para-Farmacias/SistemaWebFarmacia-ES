@@ -12,6 +12,7 @@ import HomeAdm from "./pages/HomeAdm/HomeAdm";
 import LoginAdm from "./pages/LoginAdm/LoginAdm";
 import LoginCliente from "./pages/LoginCliente/LoginCliente";
 import "./App.css";
+import CadastroCliente from "./pages/CadastroCliente/CadastroCliente";
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
 
           {/* Página de login do cliente */}
           <Route path="/login-cliente" element={<LoginCliente />} />
+
+          <Route path="/cadastro-cliente" element={<CadastroCliente />} />
 
           {/* Página Home protegida: só acessa se estiver logado */}
           <Route
