@@ -48,7 +48,7 @@ http://localhost:5173
 - Back-End: Spring Boot (v3.5.7)
 -	Linguagem Back-End: Java (v17)
 -	Front-End: React (v18)
--	Banco de Dados: PostgreSQL (v17)
+-	Banco de Dados: PostgreSQL (v18)
 -	IDE (Back-End): IntelliJ IDEA (v2025.2)
 -	IDE (Front-End/Geral): VS Code (v1.95)
 -	Controle de Versão: Git (v2.47) / GitHub
