@@ -76,6 +76,37 @@ Este projeto está organizado nas seguintes pastas:
 
 *   **`Requisitos/`**: Documentação dos **requisitos do sistema**.
 
+
+*   **Back-End**
+src
+└── main
+    └── java
+        └── com.br.farmacia.apiFarmacia
+            ├── controller/
+            │   # Recebe requisições HTTP e delega para o Service.
+            │
+            ├── data/
+            │   ├── dto/
+            │   │   ├── request/
+            │   │   │    # DTOs de entrada (dados enviados nas requisições).
+            │   │   │
+            │   │   └── response/
+            │   │       # DTOs de saída (dados retornados nas respostas).
+            │   │
+            │   └── entity/
+            │       # Entidades JPA (representação das tabelas do banco de dados).
+            │
+            ├── repository/
+            │   # Interfaces Spring Data JPA para acesso ao banco de dados.
+            │
+            ├── service/
+            │   # Regras de negócio e lógica da aplicação.
+            │
+            └── Startup.java                  # Classe principal da aplicação Spring Boot.
+            
+    └── resources/
+       # Configurações do ambiente (banco de dados, porta, etc.).
+
 ### 👥 Membros da Equipe
 -	Matheus Gomes Monteiro, 202410369
 -	Gustavo Alessandro De Souza Sabino, 202411214
