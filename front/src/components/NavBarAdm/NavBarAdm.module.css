@@ -1,0 +1,53 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 100vh;
+  background-color: rgba(74, 110, 194, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.link {
+  background-color: white;
+  color: #0055ff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.logout {
+  margin-top: auto;
+  margin-bottom: 20px;
+  background-color: white;
+  color: #0055ff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background-color: #0099ff;
+  color: white;
+}
