@@ -1,0 +1,32 @@
+/* src/App.css
+   Estilos globais para garantir que as páginas ocupem a tela inteira
+   e evitar o efeito de "faixa estreita" (1/6 da largura). */
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Tipografia e fundo padrão da aplicação */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* Opcional: estilo básico para botões globais */
+button {
+  border: none;
+  cursor: pointer;
+}
+
+button:focus {
+  outline: 2px solid rgba(0,0,0,0.2);
+  outline-offset: 2px;
+}
