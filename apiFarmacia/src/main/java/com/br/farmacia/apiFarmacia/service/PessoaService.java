@@ -51,8 +51,9 @@ public class PessoaService {
 
     public String deletePessoa(Long idPessoa) {
         Pessoa pessoa = getPessoaEntityById(idPessoa);
-        pessoaRepository.delete(pessoa);
-        // pessoa.setDataExclusao(LocalDate.now());
+
+        pessoa.setDataExclusao(LocalDate.now());
+        pessoaRepository.save(pessoa);
 
         return "Pessoa Id: " + "deletada com sucesso!";
     }
