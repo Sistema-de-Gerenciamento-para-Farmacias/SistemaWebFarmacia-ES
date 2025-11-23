@@ -76,6 +76,33 @@ Este projeto está organizado nas seguintes pastas:
 
 *   **`Requisitos/`**: Documentação dos **requisitos do sistema**.
 
+
+**Back-End**
+### 📁 **Back-End (`back/`)**
+
+* **`back/`**: Contém o código-fonte da aplicação **Back-End** desenvolvida com **Spring Boot**.
+  * **`back/src/`**: Código principal da API e regras de negócio.
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/controller/`**  
+      Controladores responsáveis por receber as requisições HTTP e encaminhar para a camada de serviço.
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/data/dto/request/`**  
+      DTOs de **entrada** (dados enviados pelo cliente).
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/data/dto/response/`**  
+      DTOs de **saída** (dados retornados nas respostas da API).
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/entity/`**  
+      Entidades JPA que representam as tabelas do banco de dados.
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/repository/`**  
+      Interfaces do **Spring Data JPA** responsáveis pelo acesso ao banco de dados.
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/service/`**  
+      Regras de negócio e lógica da aplicação.
+    * **`back/src/main/java/com/br/farmacia/apiFarmacia/Startup.java`**  
+      Classe principal da aplicação Spring Boot.
+  * **`back/src/resources/`**  
+    Arquivos de configuração, templates e propriedades da aplicação.
+  * **`back/src/test/`**  
+    Testes unitários e de integração do projeto.
+* **`back/config/`**  
+  Configurações do servidor, banco de dados e propriedades adicionais da aplicação.
+
 ### 👥 Membros da Equipe
 -	Matheus Gomes Monteiro, 202410369
 -	Gustavo Alessandro De Souza Sabino, 202411214
