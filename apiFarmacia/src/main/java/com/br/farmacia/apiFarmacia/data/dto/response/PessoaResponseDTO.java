@@ -17,6 +17,6 @@ public record PessoaResponseDTO(
         String senha
 ) {
     public PessoaResponseDTO(Pessoa pessoa){
-        this(pessoa.getIdpessoa(),pessoa.getNome(),pessoa.getCpf(), pessoa.getTelefone(), pessoa.getEmail(),pessoa.getSenha());
+        this(pessoa.getIdPessoa(),pessoa.getNome(),pessoa.getCpf(), pessoa.getTelefone(), pessoa.getEmail(),pessoa.getSenha());
     }
 }
