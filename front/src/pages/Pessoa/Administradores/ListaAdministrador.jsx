@@ -99,6 +99,13 @@ function ListaAdministrador() {
                 >
                   🗑️
                 </button>
+                  <button
+                    className={styles.detailsButton}
+                    onClick={() => navigate(`/detalhesAdministrador/${a.id}`)}
+                    title="Ver Detalhes"
+                  >
+                    🔍
+                  </button>
               </td>
             </tr>
           ))}

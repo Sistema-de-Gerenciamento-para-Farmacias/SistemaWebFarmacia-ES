@@ -1,42 +1,39 @@
-// ListaFuncionarios.jsx
-// Lista de funcionários com busca (nome/email), editar e excluir com confirmação
+// front/src/pages/Produtos/ProdutosAdministrador/ListarProdutos/ListarProdutos.jsx
+// Lista de produtos com busca, editar, excluir e ver detalhes
 
 import { useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "../stylesPessoa/listar.module.css"; // reaproveitando o mesmo CSS
+import styles from "./listarProdutos.module.css";
 
-import NavBarAdm from "../../../components/NavBarAdm/NavBarAdm";
-import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
-import MessageBox from "../../../components/MessageBox/MessageBox";
-import { AuthContext } from "../../../context/AuthContext";
+import NavBarAdm from "../../../../components/NavBarAdm/NavBarAdm";
+import ConfirmModal from "../../../../components/ConfirmModal/ConfirmModal";
+import MessageBox from "../../../../components/MessageBox/MessageBox";
+import { AuthContext } from "../../../../context/AuthContext";
 
-import usuariosDb from "../../../db/DbTempUsuarios";
+import produtosDb from "../../../../db/DbTempProdutos";
 
-function ListaFuncionarios() {
+function ListarProdutos() {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
-  // apenas funcionários (EhAdmin = false)
-  const [funcionarios, setFuncionarios] = useState(
-    usuariosDb.filter((u) => !u.EhAdmin)
-  );
+  const [produtos, setProdutos] = useState(produtosDb);
   const [busca, setBusca] = useState("");
   const [confirmId, setConfirmId] = useState(null);
   const [message, setMessage] = useState("");
 
   const filtrados = useMemo(() => {
     const termo = busca.toLowerCase().trim();
-    return funcionarios.filter(
-      (f) =>
-        f.nome.toLowerCase().includes(termo) ||
-        f.email.toLowerCase().includes(termo)
+    return produtos.filter(
+      (p) =>
+        p.nome.toLowerCase().includes(termo) ||
+        p.fabricante.toLowerCase().includes(termo)
     );
-  }, [funcionarios, busca]);
+  }, [produtos, busca]);
 
-  const excluirFuncionario = (id) => {
-    setFuncionarios((prev) => prev.filter((f) => f.id !== id));
+  const excluirProduto = (id) => {
+    setProdutos((prev) => prev.filter((p) => p.id !== id));
     setConfirmId(null);
-    setMessage("Funcionário excluído com sucesso!");
+    setMessage("Produto excluído com sucesso!");
   };
 
   return (
@@ -44,7 +41,7 @@ function ListaFuncionarios() {
       <NavBarAdm />
 
       <div className={styles.header}>
-        <h2 className={styles.title}>Lista de Funcionários</h2>
+        <h2 className={styles.title}>Lista de Produtos</h2>
         <button className={styles.logoutTop} onClick={logout}>
           Logout
         </button>
@@ -55,7 +52,7 @@ function ListaFuncionarios() {
           <span className={styles.searchIcon}>🔎</span>
           <input
             type="text"
-            placeholder="Buscar por nome ou email..."
+            placeholder="Buscar por nome ou fabricante..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className={styles.searchInput}
@@ -64,44 +61,54 @@ function ListaFuncionarios() {
 
         <button
           className={styles.createButton}
-          onClick={() => navigate("/cadastro-funcionario")}
-          title="Criar Funcionário"
+          onClick={() => navigate("/cadastrarProduto")}
+          title="Cadastrar Produto"
         >
-          ➕ Criar Funcionário
+          ➕ Cadastrar Produto
         </button>
       </div>
 
       <table className={styles.table}>
         <thead>
           <tr>
+            <th>Imagem</th>
             <th>Nome</th>
-            <th>Email</th>
+            <th>Fabricante</th>
+            <th>Preço</th>
             <th className={styles.acoes}>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {filtrados.map((f) => (
-            <tr key={f.id}>
-              <td>{f.nome}</td>
-              <td>{f.email}</td>
+          {filtrados.map((p) => (
+            <tr key={p.id}>
+              <td>
+                <img
+                  src={p.linkImagem}
+                  alt={p.nome}
+                  className={styles.produtoImg}
+                />
+              </td>
+              <td>{p.nome}</td>
+              <td>{p.fabricante}</td>
+              <td>R$ {p.preco.toFixed(2)}</td>
               <td className={styles.actionsCell}>
                 <button
                   className={styles.editButton}
-                  onClick={() => navigate(`/editar-funcionario/${f.id}`)}
+                  onClick={() => navigate(`/editarProduto/${p.id}`)}
                   title="Editar"
                 >
                   ✏️
                 </button>
                 <button
                   className={styles.deleteButton}
-                  onClick={() => setConfirmId(f.id)}
+                  onClick={() => setConfirmId(p.id)}
                   title="Excluir"
                 >
                   🗑️
                 </button>
                 <button
                   className={styles.detailsButton}
-                  onClick={() => navigate(`/detalhesFuncionario/${f.id}`)}
+                  onClick={() => navigate(`/detalhesProduto/${p.id}`)}
                   title="Ver Detalhes"
                 >
                   🔍
@@ -111,8 +118,8 @@ function ListaFuncionarios() {
           ))}
           {filtrados.length === 0 && (
             <tr>
-              <td colSpan={3} className={styles.empty}>
-                Nenhum funcionário encontrado.
+              <td colSpan={5} className={styles.empty}>
+                Nenhum produto encontrado.
               </td>
             </tr>
           )}
@@ -121,9 +128,9 @@ function ListaFuncionarios() {
 
       {confirmId && (
         <ConfirmModal
-          message="Deseja realmente excluir este funcionário?"
+          message="Deseja realmente excluir este produto?"
           onCancel={() => setConfirmId(null)}
-          onConfirm={() => excluirFuncionario(confirmId)}
+          onConfirm={() => excluirProduto(confirmId)}
         />
       )}
 
@@ -134,4 +141,4 @@ function ListaFuncionarios() {
   );
 }
 
-export default ListaFuncionarios;
+export default ListarProdutos;

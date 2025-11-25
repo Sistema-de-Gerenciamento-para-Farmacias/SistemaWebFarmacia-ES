@@ -1,0 +1,97 @@
+.container {
+  margin-left: 200px;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.logoutTop {
+  background-color: white;
+  color: #0055ff;
+  border: 1px solid #0055ff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logoutTop:hover {
+  background-color: #0099ff;
+  color: white;
+  border-color: #0099ff;
+}
+
+.formWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+.cancel {
+  background-color: #ccc;
+  color: #222;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel:hover {
+  background-color: #999;
+}
+
+.saveButton {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.saveButton:hover {
+  background-color: #4d8dff;
+}

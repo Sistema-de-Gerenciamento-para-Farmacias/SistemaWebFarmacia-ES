@@ -98,6 +98,13 @@ function ListaClientes() {
                 >
                   🗑️
                 </button>
+                <button
+                  className={styles.detailsButton}
+                  onClick={() => navigate(`/detalhesCliente/${c.id}`)}
+                  title="Ver Detalhes"
+                >
+                  🔍
+                </button>
               </td>
             </tr>
           ))}

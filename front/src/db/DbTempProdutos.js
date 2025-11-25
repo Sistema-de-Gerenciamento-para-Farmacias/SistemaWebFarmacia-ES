@@ -11,6 +11,7 @@ const produtos = [
     dataValidade: "2026-01-01",
     preco: 12.5,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 2,
@@ -21,6 +22,7 @@ const produtos = [
     dataValidade: "2025-12-01",
     preco: 18.9,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 3,
@@ -31,6 +33,7 @@ const produtos = [
     dataValidade: "2026-05-15",
     preco: 9.9,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 4,
@@ -41,6 +44,7 @@ const produtos = [
     dataValidade: "2027-03-10",
     preco: 25.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 5,
@@ -51,6 +55,7 @@ const produtos = [
     dataValidade: "2025-09-20",
     preco: 32.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 6,
@@ -61,6 +66,7 @@ const produtos = [
     dataValidade: "2026-11-11",
     preco: 15.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 7,
@@ -71,6 +77,7 @@ const produtos = [
     dataValidade: "2027-01-01",
     preco: 10.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 8,
@@ -81,6 +88,7 @@ const produtos = [
     dataValidade: "2025-08-01",
     preco: 40.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 9,
@@ -91,6 +99,7 @@ const produtos = [
     dataValidade: "2026-02-01",
     preco: 22.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
   {
     id: 10,
@@ -101,6 +110,7 @@ const produtos = [
     dataValidade: "2026-07-01",
     preco: 28.0,
     existe: true,
+    descricao: "descrição .................    ............ .....           .............           ....         .............."
   },
 ];
 

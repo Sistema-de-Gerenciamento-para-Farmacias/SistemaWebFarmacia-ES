@@ -1,4 +1,4 @@
-// NavBarAdm.jsx
+// front/src/components/NavBarAdm/NavBarAdm.jsx
 // Barra lateral vertical para administrador com navegação
 
 import styles from "./NavBarAdm.module.css";
@@ -16,6 +16,9 @@ function NavBarAdm() {
         ⬅ Voltar ao Início
       </button>
       <div className={styles.links}>
+        <button className={styles.link} onClick={() => navigate("/homeAdm")}>
+          Home
+        </button>
         <button className={styles.link} onClick={() => navigate("/listaClientes")}>
           Clientes
         </button>
@@ -24,6 +27,12 @@ function NavBarAdm() {
         </button>
         <button className={styles.link} onClick={() => navigate("/listaAdministradores")}>
           Administradores
+        </button>
+        <button className={styles.link} onClick={() => navigate("/listarVendas")}>
+          Vendas
+        </button>
+        <button className={styles.link} onClick={() => navigate("/listarProdutos")}>
+          Produtos
         </button>
       </div>
       <button className={styles.logout} onClick={logout}>Logout</button>

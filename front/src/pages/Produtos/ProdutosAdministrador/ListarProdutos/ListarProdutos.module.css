@@ -1,8 +1,8 @@
 .container {
   margin-left: 200px;
   padding: 20px;
-  min-height: 100vh; /* ocupa toda a altura da tela */
-  background-color: #f5f5f5; /* fundo igual aos produtos */
+  min-height: 100vh;       /* ocupa toda a altura da tela */
+  background-color: #f5f5f5; /* fundo cinza claro em toda a tela */
 }
 
 .header {
@@ -30,6 +30,7 @@
   border-color: #0099ff;
 }
 
+/* Barra de pesquisa */
 .topBar {
   display: flex;
   justify-content: space-between;
@@ -51,6 +52,7 @@
 
 .searchIcon {
   margin-right: 8px;
+  font-size: 1.2rem;
 }
 
 .searchInput {
@@ -65,45 +67,55 @@
   background-color: #0055ff;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
-  white-space: nowrap;
 }
 
 .createButton:hover {
   background-color: #4d8dff;
 }
 
+/* Tabela */
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: #fff; /* fundo branco para tabela */
   border-radius: 8px;
   overflow: hidden;
 }
 
 .table th,
 .table td {
-  border: 1px solid #eee;
+  border: 1px solid #ddd;
   padding: 10px;
-  text-align: left;
+  text-align: center;
+  vertical-align: middle; /* centraliza verticalmente */
 }
 
-.table th {
-  background: #f7f7f7;
+.produtoImg {
+  width: 100px;          /* área fixa */
+  height: 100px;
+  object-fit: contain;   /* mostra a imagem inteira sem cortar */
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #fff; /* fundo branco para padronizar */
+  padding: 4px;
 }
 
 .acoes {
-  width: 120px;
+  width: 180px; /* largura maior para caber os 3 ícones */
 }
 
 .actionsCell {
   display: flex;
+  justify-content: center;
+  align-items: center; /* centraliza verticalmente */
   gap: 8px;
-  align-items: center;
+  height: 100%; /* ocupa toda a altura da célula */
 }
 
+/* Botões de ação */
 .editButton{
   background-color: #0055ff; /* azul padrão */
   color: white;
@@ -114,11 +126,11 @@
 }
 
 .editButton:hover{
-  background-color: #4d8dff;
+  background-color: #4d8dff; /* azul mais claro no hover */
 }
 
 .detailsButton {
-  background-color: #ff8c00; /* laranja */
+  background-color: #ff8c00; /* azul padrão */
   color: white;
   border: none;
   padding: 6px 10px;
@@ -127,8 +139,9 @@
 }
 
 .detailsButton:hover {
-  background-color: #e5a361;
+  background-color: #e5a361; /* azul mais claro no hover */
 }
+
 
 .deleteButton {
   background-color: #ff3333;
@@ -145,20 +158,6 @@
 
 .empty {
   text-align: center;
-  color: #666;
   padding: 20px;
-}
-
-.addButton {
-  margin-top: 16px;
-  background-color: #0055ff;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.addButton:hover {
-  background-color: #4d8dff;
+  color: #666;
 }
