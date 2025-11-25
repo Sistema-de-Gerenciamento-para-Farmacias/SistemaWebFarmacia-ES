@@ -1,41 +1,43 @@
-// EditarCliente.jsx
-// Edição de cliente com dados pré-preenchidos usando DbTempClientes
+// front/src/pages/CadastroAdministrador/CadastroAdministrador.jsx
+// Tela de cadastro de administrador — estilo idêntico ao CadastroFuncionario
 
-import { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import styles from "./EditarCliente.module.css";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../stylesPessoa/cadastrar.module.css";
 
-import NavBarAdm from "../../components/NavBarAdm/NavBarAdm";
-import { AuthContext } from "../../context/AuthContext";
-import MessageBox from "../../components/MessageBox/MessageBox";
+import NavBarAdm from "../../../components/NavBarAdm/NavBarAdm";
+import { AuthContext } from "../../../context/AuthContext";
+import MessageBox from "../../../components/MessageBox/MessageBox";
 
-import clientesDb from "../../db/DbTempClientes";
-
-function EditarCliente() {
-  const { id } = useParams();
+function CadastroAdministrador() {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
   const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const cliente = clientesDb.find((c) => String(c.id) === String(id));
-    if (cliente) {
-      setNome(cliente.nome);
-      setCpf(cliente.cpf);
-      setTelefone(cliente.telefone);
-      setEmail(cliente.email);
-    }
-  }, [id]);
-
   const salvar = () => {
-    setMessage("Cliente atualizado com sucesso!");
+    if (!nome || !email || !senha) {
+      setMessage("Preencha todos os campos antes de cadastrar!");
+      return;
+    }
+
+    const novoAdm = {
+      id: Date.now(),
+      nome,
+      EhAdmin: true,
+      email,
+      senha,
+      token: `token-adm-${Date.now()}`,
+    };
+
+    console.log("Administrador cadastrado:", novoAdm);
+
+    setMessage("Administrador cadastrado com sucesso!");
     setTimeout(() => {
-      navigate("/listaClientes");
+      navigate("/listaAdministradores");
     }, 1500);
   };
 
@@ -45,7 +47,7 @@ function EditarCliente() {
 
       <div className={styles.header}>
         <div className={styles.left}>
-          <h2 className={styles.title}>Editar Cliente</h2>
+          <h2 className={styles.title}>Cadastro de Administrador</h2>
         </div>
         <button className={styles.logoutTop} onClick={logout}>
           Logout
@@ -62,35 +64,29 @@ function EditarCliente() {
             placeholder="Digite o nome"
           />
 
-          <label className={styles.label}>CPF</label>
-          <input
-            className={styles.input}
-            value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
-            placeholder="Digite o CPF"
-          />
-
-          <label className={styles.label}>Telefone</label>
-          <input
-            className={styles.input}
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
-            placeholder="Digite o telefone"
-          />
-
           <label className={styles.label}>Email</label>
           <input
             className={styles.input}
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Digite o email"
+          />
+
+          <label className={styles.label}>Senha</label>
+          <input
+            className={styles.input}
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            placeholder="Digite a senha"
           />
 
           <div className={styles.actions}>
             <button
               type="button"
               className={styles.cancel}
-              onClick={() => navigate("/listaClientes")}
+              onClick={() => navigate("/listaAdministradores")}
             >
               Cancelar
             </button>
@@ -99,7 +95,7 @@ function EditarCliente() {
               className={styles.saveButton}
               onClick={salvar}
             >
-              Salvar
+              Cadastrar
             </button>
           </div>
         </form>
@@ -112,4 +108,4 @@ function EditarCliente() {
   );
 }
 
-export default EditarCliente;
+export default CadastroAdministrador;

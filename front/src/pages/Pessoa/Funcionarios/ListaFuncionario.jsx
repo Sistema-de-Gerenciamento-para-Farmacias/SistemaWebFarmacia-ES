@@ -3,14 +3,14 @@
 
 import { useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./ListaFuncionario.module.css"; // reaproveitando o mesmo CSS
+import styles from "../stylesPessoa/listar.module.css"; // reaproveitando o mesmo CSS
 
-import NavBarAdm from "../../components/NavBarAdm/NavBarAdm";
-import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
-import MessageBox from "../../components/MessageBox/MessageBox";
-import { AuthContext } from "../../context/AuthContext";
+import NavBarAdm from "../../../components/NavBarAdm/NavBarAdm";
+import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
+import MessageBox from "../../../components/MessageBox/MessageBox";
+import { AuthContext } from "../../../context/AuthContext";
 
-import usuariosDb from "../../db/DbTempUsuarios";
+import usuariosDb from "../../../db/DbTempUsuarios";
 
 function ListaFuncionarios() {
   const navigate = useNavigate();

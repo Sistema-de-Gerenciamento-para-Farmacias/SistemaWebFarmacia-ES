@@ -22,7 +22,7 @@ function NavBarAdm() {
         <button className={styles.link} onClick={() => navigate("/listaFuncionarios")}>
           Funcionários
         </button>
-        <button className={styles.link} onClick={() => navigate("/listaAdms")}>
+        <button className={styles.link} onClick={() => navigate("/listaAdministradores")}>
           Administradores
         </button>
       </div>

@@ -3,14 +3,14 @@
 
 import { useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./ListaClientes.module.css";
+import styles from "../stylesPessoa/listar.module.css";
 
-import NavBarAdm from "../../components/NavBarAdm/NavBarAdm";
-import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
-import MessageBox from "../../components/MessageBox/MessageBox";
-import { AuthContext } from "../../context/AuthContext";
+import NavBarAdm from "../../../components/NavBarAdm/NavBarAdm";
+import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
+import MessageBox from "../../../components/MessageBox/MessageBox";
+import { AuthContext } from "../../../context/AuthContext";
 
-import clientesDb from "../../db/DbTempClientes";
+import clientesDb from "../../../db/DbTempClientes";
 
 // Formata CPF para exibição: 12345678901 -> 123.456.789-01
 function formatCpf(cpf) {

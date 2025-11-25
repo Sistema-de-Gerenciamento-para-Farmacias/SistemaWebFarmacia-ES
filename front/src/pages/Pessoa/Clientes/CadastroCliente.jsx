@@ -3,9 +3,9 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./CadastroCliente.module.css";
-import BotaoRetorno from "../../components/BotaoRetorno/BotaoRetorno";
-import MessageBox from "../../components/MessageBox/MessageBox";
+import styles from "../stylesPessoa/cadastrar.module.css";
+import BotaoRetorno from "../../../components/BotaoRetorno/BotaoRetorno";
+import MessageBox from "../../../components/MessageBox/MessageBox";
 // (Sem Loading no cadastro, conforme pedido)
 
 function CadastroCliente() {

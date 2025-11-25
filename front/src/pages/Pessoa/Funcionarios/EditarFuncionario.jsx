@@ -1,15 +1,18 @@
-// front/src/pages/CadastroFuncionario/CadastroFuncionario.jsx
-// Tela de cadastro de funcionário — estilo idêntico ao EditarCliente
+// front/src/pages/EditarFuncionario/EditarFuncionario.jsx
+// Tela de edição de funcionário — estilo idêntico ao EditarCliente
 
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./CadastroFuncionario.module.css";
+import { useState, useEffect, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import styles from "../stylesPessoa/editar.module.css";
 
-import NavBarAdm from "../../components/NavBarAdm/NavBarAdm";
-import { AuthContext } from "../../context/AuthContext";
-import MessageBox from "../../components/MessageBox/MessageBox";
+import NavBarAdm from "../../../components/NavBarAdm/NavBarAdm";
+import { AuthContext } from "../../../context/AuthContext";
+import MessageBox from "../../../components/MessageBox/MessageBox";
 
-function CadastroFuncionario() {
+import usuariosDb from "../../../db/DbTempUsuarios";
+
+function EditarFuncionario() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
@@ -18,24 +21,34 @@ function CadastroFuncionario() {
   const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    const funcionario = usuariosDb.find(
+      (u) => String(u.id) === String(id) && !u.EhAdmin
+    );
+    if (funcionario) {
+      setNome(funcionario.nome);
+      setEmail(funcionario.email);
+      setSenha(funcionario.senha);
+    }
+  }, [id]);
+
   const salvar = () => {
     if (!nome || !email || !senha) {
-      setMessage("Preencha todos os campos antes de cadastrar!");
+      setMessage("Preencha todos os campos antes de salvar!");
       return;
     }
 
-    const novoFuncionario = {
-      id: Date.now(),
+    const atualizado = {
+      id,
       nome,
-      EhAdmin: false,
       email,
       senha,
-      token: `token-func-${Date.now()}`,
+      EhAdmin: false,
     };
 
-    console.log("Funcionário cadastrado:", novoFuncionario);
+    console.log("Funcionário atualizado:", atualizado);
 
-    setMessage("Funcionário cadastrado com sucesso!");
+    setMessage("Funcionário atualizado com sucesso!");
     setTimeout(() => {
       navigate("/listaFuncionarios");
     }, 1500);
@@ -47,7 +60,7 @@ function CadastroFuncionario() {
 
       <div className={styles.header}>
         <div className={styles.left}>
-          <h2 className={styles.title}>Cadastro de Funcionário</h2>
+          <h2 className={styles.title}>Editar Funcionário</h2>
         </div>
         <button className={styles.logoutTop} onClick={logout}>
           Logout
@@ -95,7 +108,7 @@ function CadastroFuncionario() {
               className={styles.saveButton}
               onClick={salvar}
             >
-              Cadastrar
+              Salvar
             </button>
           </div>
         </form>
@@ -108,4 +121,4 @@ function CadastroFuncionario() {
   );
 }
 
-export default CadastroFuncionario;
+export default EditarFuncionario;

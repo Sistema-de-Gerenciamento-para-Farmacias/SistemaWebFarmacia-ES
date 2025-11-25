@@ -12,12 +12,21 @@ import HomeAdm from "./pages/HomeAdm/HomeAdm";
 import LoginAdm from "./pages/LoginAdm/LoginAdm";
 import LoginCliente from "./pages/LoginCliente/LoginCliente";
 import "./App.css";
-import CadastroCliente from "./pages/CadastroCliente/CadastroCliente";
-import ListaClientes from "./pages/ListaClientes/ListaClientes";
-import EditarCliente from "./pages/EditarCliente/EditarCliente";
-import ListaFuncionarios from "./pages/ListaFuncionario/ListaFuncionario";
-import CadastroFuncionario from "./pages/CadastroFuncionario/CadastroFuncionario";
-import EditarFuncionario from "./pages/EditarFuncionario/EditarFuncionario";
+
+// Clientes
+import CadastroCliente from "./pages/Pessoa/Clientes/CadastroCliente";
+import ListaClientes from "./pages/Pessoa/Clientes/ListaClientes";
+import EditarCliente from "./pages/Pessoa/Clientes/EditarCliente";
+
+// Funcionários
+import ListaFuncionarios from "./pages/Pessoa/Funcionarios/ListaFuncionario";
+import CadastroFuncionario from "./pages/Pessoa/Funcionarios/CadastroFuncionario";
+import EditarFuncionario from "./pages/Pessoa/Funcionarios/EditarFuncionario";
+
+// Administradores
+import ListaAdministradores from "./pages/Pessoa/Administradores/ListaAdministrador";
+import CadastroAdministrador from "./pages/Pessoa/Administradores/CadastroAdministrador";
+import EditarAdministrador from "./pages/Pessoa/Administradores/EditarAdministrador";
 
 function App() {
   return (
@@ -34,9 +43,10 @@ function App() {
           {/* Página de login do cliente */}
           <Route path="/login-cliente" element={<LoginCliente />} />
 
+          {/* Cadastro de cliente */}
           <Route path="/cadastro-cliente" element={<CadastroCliente />} />
 
-          {/* Página Home protegida: só acessa se estiver logado */}
+          {/* Páginas Home protegidas */}
           <Route
             path="/homeAdm"
             element={
@@ -53,6 +63,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* CRUD Clientes */}
           <Route
             path="/editar-cliente/:id"
             element={
@@ -69,6 +81,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* CRUD Funcionários */}
           <Route
             path="/listaFuncionarios"
             element={
@@ -90,6 +104,32 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditarFuncionario />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* CRUD Administradores */}
+          <Route
+            path="/listaAdministradores"
+            element={
+              <ProtectedRoute>
+                <ListaAdministradores />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cadastroAdministrador"
+            element={
+              <ProtectedRoute>
+                <CadastroAdministrador />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editarAdministrador/:id"
+            element={
+              <ProtectedRoute>
+                <EditarAdministrador />
               </ProtectedRoute>
             }
           />
