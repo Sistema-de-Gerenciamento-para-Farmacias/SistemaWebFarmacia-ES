@@ -1,47 +1,42 @@
-// ListaClientes.jsx
-// Lista de clientes com busca (nome/CPF), editar e excluir com confirmação
+// ListaFuncionarios.jsx
+// Lista de funcionários com busca (nome/email), editar e excluir com confirmação
 
 import { useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./ListaClientes.module.css";
+import styles from "./ListaFuncionario.module.css"; // reaproveitando o mesmo CSS
 
 import NavBarAdm from "../../components/NavBarAdm/NavBarAdm";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import MessageBox from "../../components/MessageBox/MessageBox";
 import { AuthContext } from "../../context/AuthContext";
 
-import clientesDb from "../../db/DbTempClientes";
+import usuariosDb from "../../db/DbTempUsuarios";
 
-// Formata CPF para exibição: 12345678901 -> 123.456.789-01
-function formatCpf(cpf) {
-  const d = cpf.replace(/\D/g, "");
-  if (d.length !== 11) return cpf;
-  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
-}
-
-function ListaClientes() {
+function ListaFuncionarios() {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
-  const [clientes, setClientes] = useState(clientesDb);
+  // apenas funcionários (EhAdmin = false)
+  const [funcionarios, setFuncionarios] = useState(
+    usuariosDb.filter((u) => !u.EhAdmin)
+  );
   const [busca, setBusca] = useState("");
   const [confirmId, setConfirmId] = useState(null);
   const [message, setMessage] = useState("");
 
   const filtrados = useMemo(() => {
     const termo = busca.toLowerCase().trim();
-    const termoCpf = busca.replace(/\D/g, "");
-    return clientes.filter(
-      (c) =>
-        c.nome.toLowerCase().includes(termo) ||
-        c.cpf.replace(/\D/g, "").includes(termoCpf)
+    return funcionarios.filter(
+      (f) =>
+        f.nome.toLowerCase().includes(termo) ||
+        f.email.toLowerCase().includes(termo)
     );
-  }, [clientes, busca]);
+  }, [funcionarios, busca]);
 
-  const excluirCliente = (id) => {
-    setClientes((prev) => prev.filter((c) => c.id !== id));
+  const excluirFuncionario = (id) => {
+    setFuncionarios((prev) => prev.filter((f) => f.id !== id));
     setConfirmId(null);
-    setMessage("Cliente excluído com sucesso!");
+    setMessage("Funcionário excluído com sucesso!");
   };
 
   return (
@@ -49,7 +44,7 @@ function ListaClientes() {
       <NavBarAdm />
 
       <div className={styles.header}>
-        <h2 className={styles.title}>Lista de Clientes</h2>
+        <h2 className={styles.title}>Lista de Funcionários</h2>
         <button className={styles.logoutTop} onClick={logout}>
           Logout
         </button>
@@ -60,40 +55,46 @@ function ListaClientes() {
           <span className={styles.searchIcon}>🔎</span>
           <input
             type="text"
-            placeholder="Buscar por nome ou CPF..."
+            placeholder="Buscar por nome ou email..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className={styles.searchInput}
           />
         </div>
-        
-        <div></div>
+
+        <button
+          className={styles.createButton}
+          onClick={() => navigate("/cadastro-funcionario")}
+          title="Criar Funcionário"
+        >
+          ➕ Criar Funcionário
+        </button>
       </div>
 
       <table className={styles.table}>
         <thead>
           <tr>
             <th>Nome</th>
-            <th>CPF</th>
+            <th>Email</th>
             <th className={styles.acoes}>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {filtrados.map((c) => (
-            <tr key={c.id}>
-              <td>{c.nome}</td>
-              <td>{formatCpf(c.cpf)}</td>
+          {filtrados.map((f) => (
+            <tr key={f.id}>
+              <td>{f.nome}</td>
+              <td>{f.email}</td>
               <td className={styles.actionsCell}>
                 <button
                   className={styles.editButton}
-                  onClick={() => navigate(`/editar-cliente/${c.id}`)}
+                  onClick={() => navigate(`/editar-funcionario/${f.id}`)}
                   title="Editar"
                 >
                   ✏️
                 </button>
                 <button
                   className={styles.deleteButton}
-                  onClick={() => setConfirmId(c.id)}
+                  onClick={() => setConfirmId(f.id)}
                   title="Excluir"
                 >
                   🗑️
@@ -104,7 +105,7 @@ function ListaClientes() {
           {filtrados.length === 0 && (
             <tr>
               <td colSpan={3} className={styles.empty}>
-                Nenhum cliente encontrado.
+                Nenhum funcionário encontrado.
               </td>
             </tr>
           )}
@@ -113,9 +114,9 @@ function ListaClientes() {
 
       {confirmId && (
         <ConfirmModal
-          message="Deseja realmente excluir este cliente?"
+          message="Deseja realmente excluir este funcionário?"
           onCancel={() => setConfirmId(null)}
-          onConfirm={() => excluirCliente(confirmId)}
+          onConfirm={() => excluirFuncionario(confirmId)}
         />
       )}
 
@@ -126,4 +127,4 @@ function ListaClientes() {
   );
 }
 
-export default ListaClientes;
+export default ListaFuncionarios;

@@ -15,6 +15,9 @@ import "./App.css";
 import CadastroCliente from "./pages/CadastroCliente/CadastroCliente";
 import ListaClientes from "./pages/ListaClientes/ListaClientes";
 import EditarCliente from "./pages/EditarCliente/EditarCliente";
+import ListaFuncionarios from "./pages/ListaFuncionario/ListaFuncionario";
+import CadastroFuncionario from "./pages/CadastroFuncionario/CadastroFuncionario";
+import EditarFuncionario from "./pages/EditarFuncionario/EditarFuncionario";
 
 function App() {
   return (
@@ -58,11 +61,35 @@ function App() {
               </ProtectedRoute>
             }
           />
-                    <Route
+          <Route
             path="/listaClientes"
             element={
               <ProtectedRoute>
                 <ListaClientes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/listaFuncionarios"
+            element={
+              <ProtectedRoute>
+                <ListaFuncionarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cadastro-funcionario"
+            element={
+              <ProtectedRoute>
+                <CadastroFuncionario />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editar-funcionario/:id"
+            element={
+              <ProtectedRoute>
+                <EditarFuncionario />
               </ProtectedRoute>
             }
           />
