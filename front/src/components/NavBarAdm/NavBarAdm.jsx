@@ -1,5 +1,5 @@
 // NavBarAdm.jsx
-// Barra lateral vertical para administrador com logout
+// Barra lateral vertical para administrador com navegação
 
 import styles from "./NavBarAdm.module.css";
 import { useNavigate } from "react-router-dom";
@@ -13,11 +13,17 @@ function NavBarAdm() {
   return (
     <div className={styles.sidebar}>
       <button className={styles.backButton} onClick={() => navigate("/")}>
-        ⬅ Voltar
+        ⬅ Voltar ao Início
       </button>
       <div className={styles.links}>
-        <button className={styles.link} onClick={() => navigate("/homeAdm")}>
-          Área do ADM
+        <button className={styles.link} onClick={() => navigate("/listaClientes")}>
+          Clientes
+        </button>
+        <button className={styles.link} onClick={() => navigate("/listaFuncionarios")}>
+          Funcionários
+        </button>
+        <button className={styles.link} onClick={() => navigate("/listaAdms")}>
+          Administradores
         </button>
       </div>
       <button className={styles.logout} onClick={logout}>Logout</button>

@@ -13,6 +13,8 @@ import LoginAdm from "./pages/LoginAdm/LoginAdm";
 import LoginCliente from "./pages/LoginCliente/LoginCliente";
 import "./App.css";
 import CadastroCliente from "./pages/CadastroCliente/CadastroCliente";
+import ListaClientes from "./pages/ListaClientes/ListaClientes";
+import EditarCliente from "./pages/EditarCliente/EditarCliente";
 
 function App() {
   return (
@@ -45,6 +47,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <HomeCliente />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editar-cliente/:id"
+            element={
+              <ProtectedRoute>
+                <EditarCliente />
+              </ProtectedRoute>
+            }
+          />
+                    <Route
+            path="/listaClientes"
+            element={
+              <ProtectedRoute>
+                <ListaClientes />
               </ProtectedRoute>
             }
           />
