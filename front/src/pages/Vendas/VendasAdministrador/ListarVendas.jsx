@@ -61,7 +61,7 @@ function ListarVendas() {
           <span className={styles.searchIcon}>🔎</span>
           <input
             type="text"
-            placeholder="Buscar por cliente ou data..."
+            placeholder="Buscar por cliente ..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className={styles.searchInput}
