@@ -19,6 +19,7 @@ function ListarVendas() {
   const [confirmId, setConfirmId] = useState(null);
   const [message, setMessage] = useState("");
 
+  // Converte ISO (yyyy-mm-dd) para dd/mm/yyyy
   const formatDate = (iso) => {
     if (!iso) return "";
     const d = new Date(iso);
@@ -26,16 +27,16 @@ function ListarVendas() {
     const day = String(d.getDate()).padStart(2, "0");
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${day}/${month}/${year}`;
   };
 
   const filtrados = useMemo(() => {
     const termo = busca.toLowerCase().trim();
-    // buscar apenas por nome do cliente
     return vendas.filter((v) => {
       const cliente = clientesDb.find((c) => c.id === v.idCliente);
       const nome = cliente ? cliente.nome.toLowerCase() : "";
-      return nome.includes(termo);
+      const dataFormatada = formatDate(v.dataCompra).toLowerCase();
+      return nome.includes(termo) || dataFormatada.includes(termo);
     });
   }, [vendas, busca]);
 
@@ -61,14 +62,12 @@ function ListarVendas() {
           <span className={styles.searchIcon}>🔎</span>
           <input
             type="text"
-            placeholder="Buscar por cliente ..."
+            placeholder="Buscar por cliente ou data (dd/mm/aaaa)..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className={styles.searchInput}
           />
         </div>
-
-        <div></div> {/* sem botão de cadastrar para vendas */}
       </div>
 
       <table className={styles.table}>
@@ -133,9 +132,7 @@ function ListarVendas() {
         />
       )}
 
-      {message && (
-        <MessageBox message={message} onClose={() => setMessage("")} />
-      )}
+      {message && <MessageBox message={message} onClose={() => setMessage("")} />}
     </div>
   );
 }

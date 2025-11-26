@@ -2,6 +2,7 @@
 // Carrossel cíclico com transição suave lateral (slide) e cards maiores que as imagens
 
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import styles from "./HomeCliente.module.css";
 import NavBarCliente from "../../components/NavBarCliente/NavBarCliente";
@@ -9,6 +10,7 @@ import produtos from "../../db/DbTempProdutos";
 
 function HomeCliente() {
   const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const lista = produtos.slice(0, 8);
   const total = lista.length;
@@ -46,10 +48,14 @@ function HomeCliente() {
             style={{ transform: `translateX(-${start * CARD_STEP}px)` }}
           >
             {lista.concat(lista).map((p, idx) => (
-              <div key={idx} className={styles.card}>
+              <div
+                key={idx}
+                className={styles.card}
+                onClick={() => navigate(`/detalhesProdutoCliente/${p.id}`)}
+              >
                 <img src={p.linkImagem} alt={p.nome} className={styles.image} />
                 <p>{p.nome}</p>
-                <p>R$ {p.preco}</p>
+                <p>R$ {p.preco.toFixed(2)}</p>
               </div>
             ))}
           </div>
@@ -61,7 +67,9 @@ function HomeCliente() {
       </div>
 
       <div className={styles.bottomLink}>
-        <button className={styles.btnProdutos}>🔎 Ver todos os produtos</button>
+        <button className={styles.btnProdutos} onClick={() => navigate("/produtosCliente")}>
+          🔎 Ver todos os produtos
+        </button>
       </div>
 
       <p className={styles.aboutText}>

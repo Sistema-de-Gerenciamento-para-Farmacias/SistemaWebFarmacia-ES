@@ -1,0 +1,107 @@
+.container {
+  margin-top: 30px;
+  padding: 80px 20px 20px 20px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Título */
+.titulo {
+  margin-bottom: 25px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0055ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Barra de busca */
+.searchBar {
+  margin-bottom: 20px;
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* Carrinho vazio */
+.vazio {
+  text-align: center;
+  padding: 50px 20px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.vazio p {
+  font-size: 18px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.vazio button {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.vazio button:hover {
+  background-color: #0044cc;
+}
+
+/* Tabela */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tabela thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.tabela th {
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+}
+
+.tabela td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Botão detalhes */
+.btnDetalhes {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btnDetalhes:hover {
+  background-color: #e67e00;
+}

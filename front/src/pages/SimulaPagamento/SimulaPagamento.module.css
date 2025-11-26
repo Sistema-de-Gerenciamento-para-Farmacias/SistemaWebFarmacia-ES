@@ -1,0 +1,146 @@
+.container {
+  padding: 80px 20px 20px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resumo {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.resumo h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+.tabela thead {
+  background-color: #eee;
+}
+
+.tabela th {
+  padding: 8px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabela td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.totalResumo {
+  text-align: right;
+  padding: 15px;
+  background-color: white;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #0055ff;
+}
+
+.formulario {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  background-color: white;
+}
+
+.formulario h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.formGroup input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btnCancelar,
+.btnConfirmar {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnCancelar {
+  background-color: #999;
+  color: white;
+}
+
+.btnCancelar:hover:not(:disabled) {
+  background-color: #777;
+}
+
+.btnConfirmar {
+  background-color: #0055ff;
+  color: white;
+}
+
+.btnConfirmar:hover:not(:disabled) {
+  background-color: #0044cc;
+}
+
+.btnCancelar:disabled,
+.btnConfirmar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

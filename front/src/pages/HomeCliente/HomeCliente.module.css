@@ -2,23 +2,45 @@
 .container {
   padding-top: 70px;
   text-align: center;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
+/* Título principal */
 .mainTitle {
-  font-size: 2rem;
+  font-size: 2.8rem;
+  font-weight: bold;
   margin: 10px 0;
   color: #0055ff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
 }
 
+.mainTitle::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 4px;
+  background-color: #0055ff;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+/* Subtítulo */
 .subTitle {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
+  font-size: 1.3rem;
+  margin-bottom: 25px;
   color: #333;
+  font-style: italic;
 }
 
+/* Título do carrossel */
 .title {
-  font-size: 1.5rem;
-  margin: 20px 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 25px 0;
+  color: #222;
 }
 
 /* Carrossel */
@@ -44,41 +66,64 @@
   transition: transform 0.6s ease-in-out;
 }
 
-/* Card maior que a imagem + box-sizing para não “vazar” */
+/* Card */
 .card {
-  width: 220px;                 /* maior que a imagem */
-  box-sizing: border-box;       /* inclui padding na largura */
+  width: 220px;
+  box-sizing: border-box;
   background-color: #fff;
-  border-radius: 8px;
-  padding: 16px;                /* espaço para a imagem e textos */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   text-align: center;
-  flex-shrink: 0;               /* não encolhe */
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
-/* Imagem fixa e centralizada, sem cortar */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+/* Imagem */
 .image {
   width: 180px;
   height: 180px;
-  object-fit: contain;          /* mantém proporção sem cortes */
+  object-fit: contain;
   border-radius: 8px;
   background-color: #f5f5f5;
   display: block;
-  margin: 0 auto 8px;
+  margin: 0 auto 10px;
+}
+
+/* Nome do produto */
+.card p:first-of-type {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  margin: 6px 0;
+}
+
+/* Preço */
+.card p:last-of-type {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #00a859; /* verde destaque */
+  margin-top: 4px;
 }
 
 /* Setas */
 .arrow {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   background-color: #e0e0e0;
   color: #333;
   border: none;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,36 +137,39 @@
 }
 
 .seta {
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
 }
 
 /* Botão azul */
 .bottomLink {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .btnProdutos {
   background-color: #0055ff;
   color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 12px 24px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btnProdutos:hover {
-  background-color: #4d8dff; /* azul mais claro */
+  background-color: #4d8dff;
+  transform: scale(1.05);
 }
 
-/* Texto */
+/* Texto institucional */
 .aboutText {
-  margin-top: 20px;
-  font-size: 1rem;
+  margin-top: 30px;
+  font-size: 1.05rem;
+  line-height: 1.6;
   color: #555;
-  max-width: 600px;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
 }

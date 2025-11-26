@@ -1,0 +1,109 @@
+.container {
+  padding: 100px 20px 20px 20px; /* espaço para navbar */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Título */
+.title {
+  margin-bottom: 25px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0055ff;
+  text-align: center;
+  position: relative;
+}
+
+.title::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 4px;
+  background-color: #0055ff;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+/* Barra de busca */
+.searchBar {
+  margin-bottom: 30px;
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* Grid fixo de 4 cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* sempre 4 por linha */
+  gap: 20px;
+}
+
+/* Card menor (~25% menor que antes) */
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Área fixa para imagem */
+.imageWrapper {
+  width: 150px;
+  height: 150px;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.imageWrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* imagem inteira dentro da área */
+}
+
+/* Informações */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.info h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.fabricante {
+  margin: 0;
+  font-size: 13px;
+  color: #888;
+}
+
+.preco {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #00a859; /* verde destaque */
+}

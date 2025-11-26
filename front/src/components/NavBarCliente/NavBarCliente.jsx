@@ -1,24 +1,46 @@
 // NavBarCliente.jsx
-// Barra superior para cliente com textos e hover
+// Barra de navegação do cliente com links principais e botão de logout.
 
 import styles from "./NavBarCliente.module.css";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
-function NavBarCliente({ logout }) {
+function NavBarCliente() {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
 
   return (
     <div className={styles.navbar}>
+      {/* Esquerda */}
       <div className={styles.left}>Farmácia Digital</div>
 
-      <button className={styles.logout} onClick={logout}>Logout</button>
-
-      <div className={styles.right}>
-        <button className={styles.icon} onClick={() => navigate("/carrinho")}>
-          🛒 Carrinho
+      {/* Centro */}
+      <div className={styles.center}>
+        <button
+          className={styles.logout}
+          onClick={() => {
+            logout();
+            navigate("/login-cliente"); // redireciona para login após logout
+          }}
+        >
+          Logout
         </button>
-        <button className={styles.icon} onClick={() => navigate("/compras")}>
-          📦 Visualizar compras
+      </div>
+
+      {/* Direita */}
+      <div className={styles.right}>
+        <button className={styles.link} onClick={() => navigate("/homeCliente")}>
+          Home
+        </button>
+        <button className={styles.link} onClick={() => navigate("/produtosCliente")}>
+          Produtos
+        </button>
+        <button className={styles.link} onClick={() => navigate("/carrinho")}>
+          Carrinho
+        </button>
+        <button className={styles.link} onClick={() => navigate("/minhasCompras")}>
+          Minhas Compras
         </button>
       </div>
     </div>

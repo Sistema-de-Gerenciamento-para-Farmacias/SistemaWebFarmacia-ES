@@ -1,0 +1,151 @@
+.container {
+  margin-top: 30px;
+  padding: 100px 20px 40px 20px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+}
+
+
+/* Caixa principal */
+.card {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Imagem fixa */
+.imageSection {
+  flex: 1;
+  min-width: 300px;
+  max-width: 300px;
+  height: 300px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageSection img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Detalhes */
+.detalhes {
+  flex: 2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Título e preço */
+.nome {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+}
+
+.preco {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #0055ff;
+  margin: 0;
+}
+
+/* Informações */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoItem {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.infoItem strong {
+  font-weight: bold;
+  color: #444;
+}
+
+/* Compra */
+.compra {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.pergunta {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Quantidade com botões */
+.quantidadeInput {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantidadeInput label {
+  font-weight: bold;
+  color: #333;
+}
+
+.quantidadeInput input {
+  width: 60px;
+  height: 40px;
+  text-align: center;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.quantidadeInput button {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  background-color: #eee;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quantidadeInput button:hover {
+  background-color: #ddd;
+}
+
+/* Botão de adicionar */
+.btnAdicionar {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  transition: background-color 0.3s ease;
+}
+
+.btnAdicionar:hover {
+  background-color: #0044cc;
+}

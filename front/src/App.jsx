@@ -39,47 +39,75 @@ import ListarVendas from "./pages/Vendas/VendasAdministrador/ListarVendas";
 import DetalhesVenda from "./pages/Vendas/VendasAdministrador/DetalhesVenda";
 import EditarVenda from "./pages/Vendas/VendasAdministrador/EditarVenda";
 
+// Cliente - Produtos
+
+import ListarProdutosCliente from "./pages/Produtos/ProdutosClientes/ListarProdutosCliente/ListarProdutosCliente";
+
+import Carrinho from "./pages/Carrinho/Carrinho";
+import SimulaPagamento from "./pages/SimulaPagamento/SimulaPagamento";
+import VisualizarComprasCliente from "./pages/Vendas/VendasCliente/VisualizarComprasCliente/VisualizarComprasCliente";
+import DetalhesCompraCliente from "./pages/Vendas/VendasCliente/DetalhesCompraCliente/DetalhesCompraCliente";
+import { CarrinhoProvider } from "./context/CarrinhoContext";
+import DetalhesProdutoCliente from "./pages/Produtos/ProdutosClientes/DetalhesProdutoCliente/DetalhesProdutoCliente";
+
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Inicial />} />
-          <Route path="/login-adm" element={<LoginAdm />} />
-          <Route path="/login-cliente" element={<LoginCliente />} />
-          <Route path="/cadastro-cliente" element={<CadastroCliente />} />
+      <CarrinhoProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Inicial />} />
+            <Route path="/login-adm" element={<LoginAdm />} />
+            <Route path="/login-cliente" element={<LoginCliente />} />
+            <Route path="/cadastro-cliente" element={<CadastroCliente />} />
 
-          <Route path="/homeAdm" element={<ProtectedRoute><HomeAdm /></ProtectedRoute>} />
-          <Route path="/homeCliente" element={<ProtectedRoute><HomeCliente /></ProtectedRoute>} />
+            <Route path="/homeAdm" element={<ProtectedRoute><HomeAdm /></ProtectedRoute>} />
+            <Route path="/homeCliente" element={<ProtectedRoute><HomeCliente /></ProtectedRoute>} />
 
-          {/* CRUD Clientes */}
-          <Route path="/editar-cliente/:id" element={<ProtectedRoute><EditarCliente /></ProtectedRoute>} />
-          <Route path="/listaClientes" element={<ProtectedRoute><ListaClientes /></ProtectedRoute>} />
-          <Route path="/detalhesCliente/:id" element={<ProtectedRoute><DetalhesCliente /></ProtectedRoute>} />
+            {/* CRUD Clientes */}
+            <Route path="/editar-cliente/:id" element={<ProtectedRoute><EditarCliente /></ProtectedRoute>} />
+            <Route path="/listaClientes" element={<ProtectedRoute><ListaClientes /></ProtectedRoute>} />
+            <Route path="/detalhesCliente/:id" element={<ProtectedRoute><DetalhesCliente /></ProtectedRoute>} />
 
-          {/* CRUD Funcionários */}
-          <Route path="/listaFuncionarios" element={<ProtectedRoute><ListaFuncionarios /></ProtectedRoute>} />
-          <Route path="/cadastro-funcionario" element={<ProtectedRoute><CadastroFuncionario /></ProtectedRoute>} />
-          <Route path="/editar-funcionario/:id" element={<ProtectedRoute><EditarFuncionario /></ProtectedRoute>} />
-          <Route path="/detalhesFuncionario/:id" element={<ProtectedRoute><DetalhesFuncionario /></ProtectedRoute>} />
+            {/* CRUD Funcionários */}
+            <Route path="/listaFuncionarios" element={<ProtectedRoute><ListaFuncionarios /></ProtectedRoute>} />
+            <Route path="/cadastro-funcionario" element={<ProtectedRoute><CadastroFuncionario /></ProtectedRoute>} />
+            <Route path="/editar-funcionario/:id" element={<ProtectedRoute><EditarFuncionario /></ProtectedRoute>} />
+            <Route path="/detalhesFuncionario/:id" element={<ProtectedRoute><DetalhesFuncionario /></ProtectedRoute>} />
 
-          {/* CRUD Administradores */}
-          <Route path="/listaAdministradores" element={<ProtectedRoute><ListaAdministradores /></ProtectedRoute>} />
-          <Route path="/cadastroAdministrador" element={<ProtectedRoute><CadastroAdministrador /></ProtectedRoute>} />
-          <Route path="/editarAdministrador/:id" element={<ProtectedRoute><EditarAdministrador /></ProtectedRoute>} />
-          <Route path="/detalhesAdministrador/:id" element={<ProtectedRoute><DetalhesAdministrador /></ProtectedRoute>} />
+            {/* CRUD Administradores */}
+            <Route path="/listaAdministradores" element={<ProtectedRoute><ListaAdministradores /></ProtectedRoute>} />
+            <Route path="/cadastroAdministrador" element={<ProtectedRoute><CadastroAdministrador /></ProtectedRoute>} />
+            <Route path="/editarAdministrador/:id" element={<ProtectedRoute><EditarAdministrador /></ProtectedRoute>} />
+            <Route path="/detalhesAdministrador/:id" element={<ProtectedRoute><DetalhesAdministrador /></ProtectedRoute>} />
 
-          {/* CRUD Produtos */}
-          <Route path="/listarProdutos" element={<ProtectedRoute><ListarProdutos /></ProtectedRoute>} />
-          <Route path="/cadastrarProduto" element={<ProtectedRoute><CadastrarProdutos /></ProtectedRoute>} />
-          <Route path="/editarProduto/:id" element={<ProtectedRoute><EditarProdutos /></ProtectedRoute>} />
-          <Route path="/detalhesProduto/:id" element={<ProtectedRoute><DetalhesProduto /></ProtectedRoute>} />
-          {/* CRUD Vendas (somente listar/editar/detalhes) */}
-          <Route path="/listarVendas" element={<ProtectedRoute><ListarVendas /></ProtectedRoute>} />
-          <Route path="/detalhesVenda/:id" element={<ProtectedRoute><DetalhesVenda /></ProtectedRoute>} />
-          <Route path="/editarVenda/:id" element={<ProtectedRoute><EditarVenda /></ProtectedRoute>} />
-        </Routes>
-      </BrowserRouter>
+            {/* CRUD Produtos Admin */}
+            <Route path="/listarProdutos" element={<ProtectedRoute><ListarProdutos /></ProtectedRoute>} />
+            <Route path="/cadastrarProduto" element={<ProtectedRoute><CadastrarProdutos /></ProtectedRoute>} />
+            <Route path="/editarProduto/:id" element={<ProtectedRoute><EditarProdutos /></ProtectedRoute>} />
+            <Route path="/detalhesProduto/:id" element={<ProtectedRoute><DetalhesProduto /></ProtectedRoute>} />
+            
+            {/* CRUD Vendas Admin */}
+            <Route path="/listarVendas" element={<ProtectedRoute><ListarVendas /></ProtectedRoute>} />
+            <Route path="/detalhesVenda/:id" element={<ProtectedRoute><DetalhesVenda /></ProtectedRoute>} />
+            <Route path="/editarVenda/:id" element={<ProtectedRoute><EditarVenda /></ProtectedRoute>} />
+
+            {/* Cliente - Produtos */}
+            <Route path="/produtosCliente" element={<ProtectedRoute><ListarProdutosCliente /></ProtectedRoute>} />
+            <Route path="/detalhesProdutoCliente/:id" element={<ProtectedRoute><DetalhesProdutoCliente /></ProtectedRoute>} />
+
+            {/* Cliente - Carrinho */}
+            <Route path="/carrinho" element={<ProtectedRoute><Carrinho /></ProtectedRoute>} />
+
+            {/* Cliente - Checkout */}
+            <Route path="/simulaPagamento" element={<ProtectedRoute><SimulaPagamento /></ProtectedRoute>} />
+
+            {/* Cliente - Minhas Compras */}
+            <Route path="/minhasCompras" element={<ProtectedRoute><VisualizarComprasCliente /></ProtectedRoute>} />
+            <Route path="/detalhesCompra/:id" element={<ProtectedRoute><DetalhesCompraCliente /></ProtectedRoute>} />
+          </Routes>
+        </BrowserRouter>
+      </CarrinhoProvider>
     </AuthProvider>
   );
 }
