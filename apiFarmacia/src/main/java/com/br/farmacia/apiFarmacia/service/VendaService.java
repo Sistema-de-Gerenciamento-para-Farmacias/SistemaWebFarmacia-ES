@@ -7,6 +7,7 @@ import com.br.farmacia.apiFarmacia.data.entity.ItensVenda;
 import com.br.farmacia.apiFarmacia.data.entity.Pessoa;
 import com.br.farmacia.apiFarmacia.data.entity.Produto;
 import com.br.farmacia.apiFarmacia.data.entity.Venda;
+import com.br.farmacia.apiFarmacia.exceptions.general.EntityNotFoundException;
 import com.br.farmacia.apiFarmacia.repository.ItensVendaRepository;
 import com.br.farmacia.apiFarmacia.repository.PessoaRepository;
 import com.br.farmacia.apiFarmacia.repository.ProdutoRepository;
@@ -96,6 +97,6 @@ public class VendaService {
     }
 
     private Venda getVendaEntityById(Long idVenda){
-        return vendaRepository.findById(idVenda).orElseThrow(() -> new RuntimeException("Venda não encontrada"));
+        return vendaRepository.findById(idVenda).orElseThrow(() -> new EntityNotFoundException(idVenda));
     }
 }

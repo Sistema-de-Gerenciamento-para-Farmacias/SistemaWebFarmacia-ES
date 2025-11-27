@@ -1,6 +1,7 @@
 package com.br.farmacia.apiFarmacia.data.dto.response;
 
 import com.br.farmacia.apiFarmacia.data.entity.Pessoa;
+import com.br.farmacia.apiFarmacia.data.entity.UserRole;
 
 public record PessoaResponseDTO(
 
@@ -14,9 +15,11 @@ public record PessoaResponseDTO(
 
         String email,
 
-        String senha
+        String senha,
+
+        UserRole tipoUsuario
 ) {
     public PessoaResponseDTO(Pessoa pessoa){
-        this(pessoa.getIdPessoa(),pessoa.getNome(),pessoa.getCpf(), pessoa.getTelefone(), pessoa.getEmail(),pessoa.getSenha());
+        this(pessoa.getIdPessoa(),pessoa.getNome(),pessoa.getCpf(), pessoa.getTelefone(), pessoa.getEmail(),pessoa.getSenha(),pessoa.getTipoUsuario());
     }
 }

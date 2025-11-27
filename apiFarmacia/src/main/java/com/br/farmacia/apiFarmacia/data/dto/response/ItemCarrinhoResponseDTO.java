@@ -1,16 +1,18 @@
 package com.br.farmacia.apiFarmacia.data.dto.response;
 
-import com.br.farmacia.apiFarmacia.data.entity.ItensVenda;
+import com.br.farmacia.apiFarmacia.data.entity.ItensCarrinho;
 
-public record ItemVendaResponseDTO(
+public record ItemCarrinhoResponseDTO(
+        Long idItemCarrinho,
         Long idProduto,
         String nomeProduto,
         Integer quantidade,
         Double precoUnitario,
         Double subTotal
 ) {
-    public ItemVendaResponseDTO(ItensVenda item) {
+    public ItemCarrinhoResponseDTO(ItensCarrinho item) {
         this(
+                item.getIdItemCarrinho(),
                 item.getProduto().getIdProduto(),
                 item.getProduto().getNome(),
                 item.getQuantidade(),

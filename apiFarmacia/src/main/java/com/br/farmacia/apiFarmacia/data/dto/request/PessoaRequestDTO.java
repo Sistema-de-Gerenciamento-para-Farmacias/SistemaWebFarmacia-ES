@@ -1,5 +1,6 @@
 package com.br.farmacia.apiFarmacia.data.dto.request;
 
+import com.br.farmacia.apiFarmacia.data.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.br.CPF;
@@ -20,6 +21,8 @@ public record PessoaRequestDTO(
         String email,
 
         @NotBlank(message = "A senha é obrigatória")
-        String senha
+        String senha,
+
+        UserRole tipoUsuario
 ) {
 }

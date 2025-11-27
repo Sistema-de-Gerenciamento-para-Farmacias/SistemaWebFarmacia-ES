@@ -3,6 +3,7 @@ package com.br.farmacia.apiFarmacia.service;
 import com.br.farmacia.apiFarmacia.data.dto.request.ProdutoRequestDTO;
 import com.br.farmacia.apiFarmacia.data.dto.response.ProdutoResponseDTO;
 import com.br.farmacia.apiFarmacia.data.entity.Produto;
+import com.br.farmacia.apiFarmacia.exceptions.general.EntityNotFoundException;
 import com.br.farmacia.apiFarmacia.repository.ProdutoRepository; // Assumindo que este repositório existe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,6 @@ public class ProdutoService {
     }
 
     private Produto getProdutoEntityById(Long idProduto){
-        return produtoRepository.findById(idProduto).orElseThrow(() -> new RuntimeException("Produto não encontrado com Id: " + idProduto));
+        return produtoRepository.findById(idProduto).orElseThrow(() -> new EntityNotFoundException(idProduto));
     }
 }
