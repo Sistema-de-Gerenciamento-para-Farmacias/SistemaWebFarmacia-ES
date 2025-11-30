@@ -1,56 +1,60 @@
-/* MessageBox.module.css
-   Caixa modal centralizada com botão X e botão OK azul */
-
+/* front/src/components/MessageBox/MessageBox.module.css */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.4); /* fundo escuro transparente */
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 1000;
 }
 
 .box {
-  background-color: #fff;
+  background: white;
+  padding: 30px;
   border-radius: 12px;
-  width: 300px;
-  padding: 20px;
-  position: relative;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: relative;
 }
 
 .close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 1.5rem;
   cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #666;
 }
 
 .content {
-  margin: 30px 0;
-  font-size: 1rem;
+  margin: 20px 0;
+}
+
+.content p {
+  font-size: 1.1rem;
   color: #333;
+  margin: 0;
 }
 
 .okButton {
-  background-color: #0055ff;
+  background: #0055ff;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 30px;
   border-radius: 8px;
-  cursor: pointer;
   font-size: 1rem;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .okButton:hover {
-  background-color: #0099ff;
+  background: #0099ff;
 }

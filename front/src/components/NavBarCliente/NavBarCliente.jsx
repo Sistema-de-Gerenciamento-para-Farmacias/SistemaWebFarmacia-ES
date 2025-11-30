@@ -1,6 +1,4 @@
-// NavBarCliente.jsx
-// Barra de navegação do cliente com links principais e botão de logout.
-
+// front/src/components/NavBarCliente/NavBarCliente.jsx
 import styles from "./NavBarCliente.module.css";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -8,22 +6,23 @@ import { AuthContext } from "../../context/AuthContext";
 
 function NavBarCliente() {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext); // ← ADICIONAR ESTA LINHA
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <div className={styles.navbar}>
       {/* Esquerda */}
-      <div className={styles.left}>Farmácia Digital</div>
+      <div className={styles.left}>
+        <div className={styles.brand}>Farmácia Digital</div>
+      </div>
 
       {/* Centro */}
       <div className={styles.center}>
-        <button
-          className={styles.logout}
-          onClick={() => {
-            logout();
-            navigate("/login-cliente"); // redireciona para login após logout
-          }}
-        >
+        <button className={styles.logout} onClick={handleLogout}>
           Logout
         </button>
       </div>

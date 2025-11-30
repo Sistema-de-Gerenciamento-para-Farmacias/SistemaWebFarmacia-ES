@@ -1,28 +1,23 @@
-// Inicial.jsx
-// Página inicial centralizada em toda a tela.
-// Título "Farmácia Digital" e dois botões vermelhos, um embaixo do outro.
-
+// front/src/pages/Inicial/Inicial.jsx
 import { useNavigate } from "react-router-dom";
 import styles from "./Inicial.module.css";
 
+/**
+ * Componente da página inicial - Primeira tela do sistema
+ * Oferece acesso ao login para usuários existentes
+ */
 function Inicial() {
   const navigate = useNavigate();
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Farmácia Digital</h1>
+      <h1 className={styles.title}>Bem vindo a farmácia digital</h1>
       <div className={styles.buttons}>
         <button
           className={styles.button}
-          onClick={() => navigate("/login-cliente")}
+          onClick={() => navigate("/login")}
         >
-          Login Cliente
-        </button>
-        <button
-          className={styles.button}
-          onClick={() => navigate("/login-adm")}
-        >
-          Login Administrador
+          Login
         </button>
       </div>
     </div>

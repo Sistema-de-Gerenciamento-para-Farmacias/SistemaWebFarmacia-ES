@@ -1,29 +1,111 @@
-// auth.js
-// Este arquivo simula funções de login (mock).
-// Em vez de chamar uma API real, ele retorna tokens fictícios.
-// DEVE ALTERAR AQUI QUANDO O BACK ESTIVER PRONTO para chamar a API de login.
+// front/src/services/auth.js
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
-import clientes from "../db/DbTempClientes";
-import usuarios from "../db/DbTempUsuarios";
+const API_URL = 'http://localhost:8080';
 
-export function loginAdm(email, senha) {
-  // Simulação de login do administrador
-  const usuario = usuarios.find(
-    (u) => u.email === email && u.senha === senha && u.EhAdmin
-  );
-  if (usuario) {
-    return { token: usuario.token, ...usuario };
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const authService = {
+  async login(email, senha) {
+    try {
+      console.log('Fazendo login com:', { email, senha });
+      
+      const response = await api.post('/login', {
+        email,
+        senha
+      });
+      
+      console.log('Resposta do backend:', response.data);
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        
+        // Decodifica o token para obter informações do usuário
+        const decodedToken = jwtDecode(response.data.token);
+        console.log('Token decodificado:', decodedToken);
+        
+        // Monta os dados do usuário
+        const userData = {
+          token: response.data.token,
+          user: {
+            email: email,
+            // O tipo de usuário pode vir do token ou precisamos de outro endpoint
+            tipoUsuario: this.getUserRoleFromToken(decodedToken),
+            id: decodedToken.sub || null
+          }
+        };
+        
+        return userData;
+      }
+      
+      throw new Error('Token não recebido do servidor');
+      
+    } catch (error) {
+      console.error('Erro no login:', error);
+      
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (error.message) {
+        throw new Error(error.message);
+      } else {
+        throw new Error('Erro ao conectar com o servidor');
+      }
+    }
+  },
+
+  // Método para extrair o role do token
+  getUserRoleFromToken(decodedToken) {
+    // Tenta diferentes possibilidades de onde o role pode estar no token
+    if (decodedToken.role) return decodedToken.role;
+    if (decodedToken.authorities) {
+      // Se for um array, pega o primeiro
+      const authorities = decodedToken.authorities;
+      if (Array.isArray(authorities) && authorities.length > 0) {
+        return authorities[0].replace('SCOPE_', '');
+      }
+    }
+    if (decodedToken.scope) return decodedToken.scope;
+    
+    return 'USER'; // Fallback
+  },
+
+  logout() {
+    localStorage.removeItem('token');
+  },
+
+  getToken() {
+    return localStorage.getItem('token');
+  },
+
+  isAuthenticated() {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp > currentTime;
+    } catch {
+      return false;
+    }
+  },
+
+  getCurrentUser() {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      return jwtDecode(token);
+    } catch {
+      return null;
+    }
   }
-  return null;
-}
+};
 
-export function loginCliente(email, senha) {
-  // Simulação de login do cliente
-  const cliente = clientes.find(
-    (c) => c.email === email && c.senha === senha && c.existe
-  );
-  if (cliente) {
-    return { token: cliente.token, ...cliente };
-  }
-  return null;
-}
+export default api;

@@ -1,30 +1,17 @@
 .container {
-  padding: 100px 20px 20px 20px; /* espaço para navbar */
+  padding: 100px 20px 20px 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* Título */
 .title {
   margin-bottom: 25px;
   font-size: 2rem;
   font-weight: bold;
   color: #0055ff;
   text-align: center;
-  position: relative;
 }
 
-.title::after {
-  content: "";
-  display: block;
-  width: 80px;
-  height: 4px;
-  background-color: #0055ff;
-  margin: 8px auto 0;
-  border-radius: 2px;
-}
-
-/* Barra de busca */
 .searchBar {
   margin-bottom: 30px;
 }
@@ -38,14 +25,12 @@
   box-sizing: border-box;
 }
 
-/* Grid fixo de 4 cards */
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* sempre 4 por linha */
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
-/* Card menor (~25% menor que antes) */
 .card {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -63,7 +48,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Área fixa para imagem */
 .imageWrapper {
   width: 150px;
   height: 150px;
@@ -78,32 +62,72 @@
 .imageWrapper img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain; /* imagem inteira dentro da área */
+  object-fit: contain;
 }
 
-/* Informações */
 .info {
   display: flex;
   flex-direction: column;
   gap: 6px;
   text-align: center;
+  width: 100%;
 }
 
 .info h3 {
   margin: 0;
   font-size: 15px;
   color: #333;
+  height: 40px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .fabricante {
   margin: 0;
   font-size: 13px;
   color: #888;
+  height: 20px;
+  overflow: hidden;
 }
 
 .preco {
   margin: 0;
   font-size: 18px;
   font-weight: bold;
-  color: #00a859; /* verde destaque */
+  color: #00a859;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
