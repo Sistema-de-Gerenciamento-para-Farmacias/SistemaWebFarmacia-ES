@@ -73,17 +73,40 @@ public class VendaService {
         return new VendaResponseDTO(getVendaEntityById(vendaSalva.getIdVenda()));
     }
 
+    @Transactional
     public VendaResponseDTO updateVenda(Long idVenda, VendaRequestDTO dto) {
         Venda venda = getVendaEntityById(idVenda);
 
+        // 1. Atualiza usuário se necessário
         if (!venda.getIdUsuario().getIdPessoa().equals(dto.idUsuario())) {
             Pessoa novaPessoa = pessoaRepository.findById(dto.idUsuario())
                     .orElseThrow(() -> new RuntimeException("Novo Usuário não encontrado."));
             venda.setIdUsuario(novaPessoa);
         }
 
+        // 2. Remove todos os itens antigos da venda
+        itensVendaRepository.deleteAll(venda.getItens());
+        venda.getItens().clear();
+
+        // 3. Adiciona os novos itens
+        for (ItensVendaRequestDTO itemDto : dto.itens()) {
+            Produto produto = produtoRepository.findById(itemDto.idProduto())
+                    .orElseThrow(() -> new RuntimeException("Produto ID " + itemDto.idProduto() + " não encontrado."));
+
+            ItensVenda itemVenda = new ItensVenda();
+            itemVenda.setVenda(venda);
+            itemVenda.setProduto(produto);
+            itemVenda.setQuantidade(itemDto.quantidade());
+
+            itensVendaRepository.save(itemVenda);
+            venda.getItens().add(itemVenda);
+        }
+
+        // 4. Salva a venda atualizada
         Venda vendaAtualizada = vendaRepository.save(venda);
-        return new VendaResponseDTO(vendaAtualizada);
+        
+        // 5. Retorna a venda com os itens atualizados
+        return new VendaResponseDTO(getVendaEntityById(vendaAtualizada.getIdVenda()));
     }
 
     @Transactional

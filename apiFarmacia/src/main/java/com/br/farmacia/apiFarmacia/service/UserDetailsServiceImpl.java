@@ -17,7 +17,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return pessoaRepository.findByEmail(email)
-                .map(UserAuthenticated::new)
+                .map(pessoa -> {
+                    // 🔒 VERIFICA SE O USUÁRIO ESTÁ ATIVO (não excluído)
+                    if (pessoa.getDataExclusao() != null) {
+                        throw new UsernameNotFoundException("Usuário está inativo/excluído: " + email);
+                    }
+                    return new UserAuthenticated(pessoa);
+                })
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
     }
 }

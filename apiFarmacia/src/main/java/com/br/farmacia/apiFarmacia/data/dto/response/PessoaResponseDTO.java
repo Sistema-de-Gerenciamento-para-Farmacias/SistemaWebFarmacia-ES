@@ -1,5 +1,7 @@
 package com.br.farmacia.apiFarmacia.data.dto.response;
 
+import java.time.LocalDate;
+
 import com.br.farmacia.apiFarmacia.data.entity.Pessoa;
 import com.br.farmacia.apiFarmacia.data.entity.UserRole;
 
@@ -17,9 +19,11 @@ public record PessoaResponseDTO(
 
         String senha,
 
-        UserRole tipoUsuario
+        UserRole tipoUsuario,
+
+        LocalDate dataExclusao
 ) {
     public PessoaResponseDTO(Pessoa pessoa){
-        this(pessoa.getIdPessoa(),pessoa.getNome(),pessoa.getCpf(), pessoa.getTelefone(), pessoa.getEmail(),pessoa.getSenha(),pessoa.getTipoUsuario());
+        this(pessoa.getIdPessoa(),pessoa.getNome(),pessoa.getCpf(), pessoa.getTelefone(), pessoa.getEmail(),pessoa.getSenha(),pessoa.getTipoUsuario(),pessoa.getDataExclusao());
     }
 }
