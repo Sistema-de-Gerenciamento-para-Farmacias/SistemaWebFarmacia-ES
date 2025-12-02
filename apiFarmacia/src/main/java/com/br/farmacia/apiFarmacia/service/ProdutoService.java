@@ -58,7 +58,7 @@ public class ProdutoService {
         produto.setDataExclusao(LocalDate.now());
         produtoRepository.save(produto);
 
-        return "Produto Id: " + "deletada com sucesso!";
+        return "Produto Id: " + idProduto + " deletado com sucesso!";
     }
 
     private Produto getProdutoEntityById(Long idProduto){
