@@ -1,4 +1,5 @@
 // front/src/pages/Produtos/ProdutosAdministrador/ListarProdutos/ListarProdutos.jsx
+
 import { useState, useContext, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ListarProdutos.module.css";
@@ -9,19 +10,43 @@ import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 import { AuthContext } from "../../../../context/AuthContext";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para listagem e gerenciamento de produtos
+ * @component
+ * @returns {JSX.Element} Lista de produtos com ações de gerenciamento
+ */
 function ListarProdutos() {
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para lista de produtos
   const [produtos, setProdutos] = useState([]);
+  
+  // Estado para termo de busca
   const [busca, setBusca] = useState("");
+  
+  // Estado para ID do produto a ser confirmado para exclusão
   const [confirmId, setConfirmId] = useState(null);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar exclusão em andamento
   const [deletingId, setDeletingId] = useState(null);
 
-  console.log('🔐 Token no ListarProdutos:', token);
-
+  /**
+   * Efeito para carregar lista de produtos quando componente é montado
+   * Executa sempre que o token muda
+   */
   useEffect(() => {
     if (token) {
       carregarProdutos();
@@ -31,11 +56,16 @@ function ListarProdutos() {
     }
   }, [token]);
 
+  /**
+   * Carrega lista de produtos do backend
+   * @async
+   */
   const carregarProdutos = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/produto/all', {
+      // Requisição GET para obter todos os produtos
+      const response = await fetch(`${API_URL}/produto/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -43,13 +73,12 @@ function ListarProdutos() {
         }
       });
 
-      console.log('📥 Resposta do backend:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         const data = await response.json();
+        // Filtra apenas produtos ativos (sem dataExclusao)
         const produtosAtivos = data.filter(produto => !produto.dataExclusao);
         setProdutos(produtosAtivos);
-        console.log(`✅ ${produtosAtivos.length} produtos carregados`);
       } else if (response.status === 401) {
         setMessage("ERRO: Não autorizado. Token inválido ou expirado.");
       } else if (response.status === 403) {
@@ -66,10 +95,17 @@ function ListarProdutos() {
     }
   };
 
+  /**
+   * Exclui um produto do sistema
+   * @async
+   * @param {number|string} id - ID do produto a ser excluído
+   */
   const excluirProduto = async (id) => {
     try {
       setDeletingId(id);
-      const response = await fetch(`http://localhost:8080/produto/delete/${id}`, {
+      
+      // Requisição DELETE para excluir produto
+      const response = await fetch(`${API_URL}/produto/delete/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -77,8 +113,10 @@ function ListarProdutos() {
         }
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Produto excluído com sucesso!");
+        // Remove produto da lista local
         setProdutos(prev => prev.filter(p => p.idProduto !== id));
       } else {
         const errorData = await response.json();
@@ -93,6 +131,10 @@ function ListarProdutos() {
     }
   };
 
+  /**
+   * Filtra produtos com base no termo de busca
+   * Utiliza useMemo para otimizar performance
+   */
   const filtrados = useMemo(() => {
     if (!busca.trim()) return produtos;
     
@@ -104,6 +146,11 @@ function ListarProdutos() {
     );
   }, [produtos, busca]);
 
+  /**
+   * Formata preço para o padrão brasileiro (R$)
+   * @param {number} preco - Preço a ser formatado
+   * @returns {string} Preço formatado (ex: "R$ 29,99")
+   */
   const formatarPreco = (preco) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -111,6 +158,11 @@ function ListarProdutos() {
     }).format(preco);
   };
 
+  /**
+   * Formata data para exibição no formato brasileiro
+   * @param {string} dataString - Data em formato string
+   * @returns {string} Data formatada ou 'N/A'
+   */
   const formatarData = (dataString) => {
     if (!dataString) return 'N/A';
     try {
@@ -121,14 +173,21 @@ function ListarProdutos() {
     }
   };
 
+  /**
+   * Função para recarregar lista de produtos
+   */
   const recarregarProdutos = () => {
     carregarProdutos();
   };
 
+  /**
+   * Renderiza a página de lista de produtos
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
 
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Lista de Produtos</h2>
         <div className={styles.headerActions}>
@@ -146,6 +205,7 @@ function ListarProdutos() {
         </div>
       </div>
 
+      {/* Barra superior com busca e botão de cadastro */}
       <div className={styles.topBar}>
         <div className={styles.searchGroup}>
           <input
@@ -166,6 +226,7 @@ function ListarProdutos() {
         </button>
       </div>
 
+      {/* Conteúdo principal: carregando ou tabela */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <Loading />
@@ -173,6 +234,7 @@ function ListarProdutos() {
         </div>
       ) : (
         <>
+          {/* Barra de informações sobre os resultados */}
           <div className={styles.infoBar}>
             <span className={styles.totalProdutos}>
               Total: {filtrados.length} produto{filtrados.length !== 1 ? 's' : ''}
@@ -180,6 +242,7 @@ function ListarProdutos() {
             </span>
           </div>
 
+          {/* Tabela de produtos */}
           <table className={styles.table}>
             <thead>
               <tr>
@@ -192,8 +255,10 @@ function ListarProdutos() {
               </tr>
             </thead>
             <tbody>
+              {/* Linhas para cada produto */}
               {filtrados.map((produto) => (
                 <tr key={produto.idProduto}>
+                  {/* Coluna: Imagem do Produto */}
                   <td>
                     <img
                       src={produto.linkImagem || '/placeholder-image.png'}
@@ -204,6 +269,8 @@ function ListarProdutos() {
                       }}
                     />
                   </td>
+                  
+                  {/* Coluna: Nome do Produto com tooltip para descrição */}
                   <td className={styles.nomeProduto}>
                     <div className={styles.nomeWrapper}>
                       <strong>{produto.nome}</strong>
@@ -214,11 +281,19 @@ function ListarProdutos() {
                       )}
                     </div>
                   </td>
+                  
+                  {/* Coluna: Fabricante */}
                   <td>{produto.fabricante || 'N/A'}</td>
+                  
+                  {/* Coluna: Preço formatado */}
                   <td className={styles.preco}>{formatarPreco(produto.preco)}</td>
+                  
+                  {/* Coluna: Data de Validade formatada */}
                   <td className={styles.dataValidade}>
                     {formatarData(produto.dataValidade)}
                   </td>
+                  
+                  {/* Coluna: Ações (Editar, Excluir, Detalhes) */}
                   <td className={styles.actionsCell}>
                     <button
                       className={styles.editButton}
@@ -246,6 +321,8 @@ function ListarProdutos() {
                   </td>
                 </tr>
               ))}
+              
+              {/* Mensagem para lista vazia */}
               {filtrados.length === 0 && (
                 <tr>
                   <td colSpan={6} className={styles.empty}>
@@ -266,6 +343,7 @@ function ListarProdutos() {
         </>
       )}
 
+      {/* Modal de confirmação para exclusão */}
       {confirmId && (
         <ConfirmModal
           message="Deseja realmente excluir este produto? Esta ação não pode ser desfeita."
@@ -274,6 +352,7 @@ function ListarProdutos() {
         />
       )}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

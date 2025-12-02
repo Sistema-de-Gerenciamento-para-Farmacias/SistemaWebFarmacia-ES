@@ -1,3 +1,5 @@
+// front/src/pages/Cliente/VisualizarComprasCliente/VisualizarComprasCliente.jsx
+
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../../context/AuthContext";
@@ -6,29 +8,56 @@ import Loading from "../../../../components/Loading/Loading";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import styles from "./VisualizarComprasCliente.module.css";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para visualização do histórico de compras do cliente
+ * @component
+ * @returns {JSX.Element} Lista de compras do cliente logado
+ */
 export function VisualizarComprasCliente() {
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e dados do usuário do contexto de autenticação
   const { token, user } = useContext(AuthContext);
   
+  // Estado para armazenar lista de compras
   const [compras, setCompras] = useState([]);
+  
+  // Estado para controlar carregamento de dados
   const [loading, setLoading] = useState(true);
+  
+  // Estado para mensagens de feedback
   const [mensagem, setMensagem] = useState("");
+  
+  // Estado para termo de busca
   const [busca, setBusca] = useState("");
 
+  /**
+   * Efeito para carregar compras quando componente é montado
+   * Executa sempre que o token de autenticação muda
+   */
   useEffect(() => {
     if (token) {
       carregarCompras();
     } else {
-      setMensagem("❌ Token de autenticação não encontrado.");
+      setMensagem("Token de autenticação não encontrado.");
       setLoading(false);
     }
   }, [token]);
 
+  /**
+   * Carrega compras do backend
+   * @async
+   */
   const carregarCompras = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/venda/all', {
+      // Requisição GET para obter todas as vendas
+      const response = await fetch(`${API_URL}/venda/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -36,11 +65,12 @@ export function VisualizarComprasCliente() {
         }
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         const todasVendas = await response.json();
         
-        // Filtrar apenas as vendas do usuário logado
-        // O backend pode não ter filtro por usuário, então filtramos no frontend
+        // Filtra apenas as vendas do usuário logado
+        // Como o backend pode não ter filtro por usuário, filtramos no frontend
         const minhasCompras = todasVendas.filter(venda => 
           venda.usuario && venda.usuario.email === user?.email
         );
@@ -48,16 +78,21 @@ export function VisualizarComprasCliente() {
         setCompras(minhasCompras);
       } else {
         const errorData = await response.json();
-        setMensagem(`❌ ${errorData.message || 'Falha ao carregar compras'}`);
+        setMensagem(`${errorData.message || 'Falha ao carregar compras'}`);
       }
     } catch (error) {
       console.error('Erro ao carregar compras:', error);
-      setMensagem("❌ Não foi possível conectar ao servidor.");
+      setMensagem("Não foi possível conectar ao servidor.");
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Formata data para exibição no formato brasileiro
+   * @param {string} dataString - Data em formato string
+   * @returns {string} Data formatada ou mensagem padrão
+   */
   const formatarData = (dataString) => {
     if (!dataString) return 'Data não informada';
     try {
@@ -68,11 +103,19 @@ export function VisualizarComprasCliente() {
     }
   };
 
+  /**
+   * Calcula quantidade total de itens em uma venda
+   * @param {Object} venda - Objeto da venda
+   * @returns {number} Quantidade total de itens
+   */
   const calcularTotalItens = (venda) => {
     if (!venda.itens) return 0;
     return venda.itens.reduce((total, item) => total + (item.quantidade || 0), 0);
   };
 
+  /**
+   * Filtra compras com base no termo de busca
+   */
   const comprasFiltradas = compras.filter(venda => {
     if (!busca.trim()) return true;
     
@@ -83,6 +126,9 @@ export function VisualizarComprasCliente() {
     );
   });
 
+  /**
+   * Renderiza estado de carregamento
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -95,12 +141,18 @@ export function VisualizarComprasCliente() {
     );
   }
 
+  /**
+   * Renderiza a página de compras do cliente
+   */
   return (
     <div className={styles.container}>
+      {/* Componente de navbar para clientes */}
       <NavBarCliente />
 
+      {/* Título principal da página */}
       <h1 className={styles.titulo}>🧾 Minhas Compras</h1>
 
+      {/* Barra de busca */}
       <div className={styles.searchBar}>
         <input
           type="text"
@@ -110,6 +162,7 @@ export function VisualizarComprasCliente() {
         />
       </div>
 
+      {/* Conteúdo principal: lista vazia ou tabela de compras */}
       {comprasFiltradas.length === 0 ? (
         <div className={styles.vazio}>
           {busca ? (
@@ -132,10 +185,12 @@ export function VisualizarComprasCliente() {
         </div>
       ) : (
         <>
+          {/* Informação sobre quantidade de resultados */}
           <div className={styles.infoCompra}>
             <span>{comprasFiltradas.length} compra(s) encontrada(s)</span>
           </div>
 
+          {/* Tabela de compras */}
           <table className={styles.tabela}>
             <thead>
               <tr>
@@ -160,6 +215,7 @@ export function VisualizarComprasCliente() {
                     </span>
                   </td>
                   <td>
+                    {/* Botão para ver detalhes (desabilitado para compras canceladas) */}
                     <button
                       className={styles.btnDetalhes}
                       onClick={() => navigate(`/detalhesCompra/${venda.idVenda}`)}
@@ -175,6 +231,7 @@ export function VisualizarComprasCliente() {
         </>
       )}
 
+      {/* Componente de mensagem para feedback */}
       {mensagem && (
         <MessageBox 
           message={mensagem} 

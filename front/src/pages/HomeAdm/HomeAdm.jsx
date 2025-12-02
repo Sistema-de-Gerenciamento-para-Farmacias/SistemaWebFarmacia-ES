@@ -1,4 +1,5 @@
 // front/src/pages/HomeAdm/HomeAdm.jsx
+
 import { useState, useEffect, useContext } from "react";
 import styles from "./HomeAdm.module.css";
 import NavBarAdm from "../../components/NavBarAdm/NavBarAdm";
@@ -7,7 +8,10 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, 
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../../components/Loading/Loading";
 
-// Registrar componentes do Chart.js
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+// Registrar componentes do Chart.js necessários para os gráficos
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -20,39 +24,60 @@ ChartJS.register(
   Legend
 );
 
+/**
+ * Componente da página inicial do administrador com dashboard de métricas
+ * @component
+ * @returns {JSX.Element} Dashboard administrativo com gráficos e estatísticas
+ */
 function HomeAdm() {
+  // Estado para controlar qual tipo de gráfico está ativo
   const [tipo, setTipo] = useState("vendas");
+  
+  // Estado para armazenar todos os dados do dashboard
   const [dados, setDados] = useState(null);
+  
+  // Estado para controlar carregamento de dados
   const [loading, setLoading] = useState(true);
+  
+  // Obtém token de autenticação do contexto
   const { token } = useContext(AuthContext);
 
+  /**
+   * Efeito para carregar dados quando o componente é montado
+   * Executa sempre que o token muda (após login/logout)
+   */
   useEffect(() => {
     if (token) {
       carregarDados();
     }
   }, [token]);
 
+  /**
+   * Carrega dados do backend para popular o dashboard
+   * @async
+   * @description Faz requisições paralelas para vendas, clientes e produtos
+   */
   const carregarDados = async () => {
     try {
       setLoading(true);
       
-      // Carrega dados em paralelo
+      // Carrega dados em paralelo para melhor performance
       const [vendasResponse, clientesResponse, produtosResponse] = await Promise.all([
-        fetch('http://localhost:8080/venda/all', {
+        fetch(`${API_URL}/venda/all`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }),
-        fetch('http://localhost:8080/pessoa/all', {
+        fetch(`${API_URL}/pessoa/all`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }),
-        fetch('http://localhost:8080/produto/all', {
+        fetch(`${API_URL}/produto/all`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -61,11 +86,13 @@ function HomeAdm() {
         })
       ]);
 
+      // Verifica se todas as respostas foram bem sucedidas
       if (vendasResponse.ok && clientesResponse.ok && produtosResponse.ok) {
         const vendas = await vendasResponse.json();
         const clientes = await clientesResponse.json();
         const produtos = await produtosResponse.json();
 
+        // Processa os dados brutos para o formato necessário
         processarDados(vendas, clientes, produtos);
       } else {
         console.error('Erro ao carregar dados');
@@ -77,8 +104,14 @@ function HomeAdm() {
     }
   };
 
+  /**
+   * Processa dados brutos do backend para o formato do dashboard
+   * @param {Array} vendas - Lista de todas as vendas
+   * @param {Array} clientes - Lista de todos os clientes/pessoas
+   * @param {Array} produtos - Lista de todos os produtos
+   */
   const processarDados = (vendas, clientes, produtos) => {
-    // Processar dados de clientes
+    // Processar dados de clientes por tipo de usuário
     const clientesAtivos = clientes.filter(c => !c.dataExclusao && c.tipoUsuario === 'USER').length;
     const clientesInativos = clientes.filter(c => c.dataExclusao && c.tipoUsuario === 'USER').length;
     const funcionarios = clientes.filter(c => !c.dataExclusao && c.tipoUsuario === 'EMPLOY').length;
@@ -94,6 +127,7 @@ function HomeAdm() {
     const produtosInativos = produtos.filter(p => p.dataExclusao).length;
     const produtosMaisVendidos = processarProdutosMaisVendidos(vendas, produtos);
 
+    // Atualiza estado com todos os dados processados
     setDados({
       clientes: {
         ativos: clientesAtivos,
@@ -113,11 +147,16 @@ function HomeAdm() {
         ativos: produtosAtivos,
         inativos: produtosInativos,
         total: produtosAtivos + produtosInativos,
-        maisVendidos: produtosMaisVendidos.slice(0, 5) // Top 5
+        maisVendidos: produtosMaisVendidos.slice(0, 5) // Top 5 produtos mais vendidos
       }
     });
   };
 
+  /**
+   * Processa vendas por mês (últimos 6 meses)
+   * @param {Array} vendas - Lista de todas as vendas
+   * @returns {Object} Dados organizados por mês
+   */
   const processarVendasPorMes = (vendas) => {
     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const vendasPorMes = new Array(6).fill(0);
@@ -126,6 +165,7 @@ function HomeAdm() {
     const hoje = new Date();
     const vendasFiltradas = vendas.filter(v => !v.dataExclusao);
     
+    // Contabiliza vendas por mês
     vendasFiltradas.forEach(venda => {
       const dataVenda = new Date(venda.dataCompra);
       const diffMeses = (hoje.getFullYear() - dataVenda.getFullYear()) * 12 + (hoje.getMonth() - dataVenda.getMonth());
@@ -146,9 +186,16 @@ function HomeAdm() {
     };
   };
 
+  /**
+   * Processa os produtos mais vendidos
+   * @param {Array} vendas - Lista de todas as vendas
+   * @param {Array} produtos - Lista de todos os produtos
+   * @returns {Array} Lista ordenada de produtos mais vendidos
+   */
   const processarProdutosMaisVendidos = (vendas, produtos) => {
     const contagemProdutos = {};
     
+    // Contabiliza quantidade vendida por produto
     vendas.filter(v => !v.dataExclusao).forEach(venda => {
       if (venda.itens) {
         venda.itens.forEach(item => {
@@ -158,6 +205,7 @@ function HomeAdm() {
       }
     });
 
+    // Mapeia IDs para objetos completos de produto
     return Object.entries(contagemProdutos)
       .map(([id, quantidade]) => {
         const produto = produtos.find(p => p.idProduto == id);
@@ -167,9 +215,14 @@ function HomeAdm() {
           valor: produto?.preco || 0
         };
       })
-      .sort((a, b) => b.quantidade - a.quantidade);
+      .sort((a, b) => b.quantidade - a.quantidade); // Ordena por quantidade (decrescente)
   };
 
+  /**
+   * Calcula valor total de uma venda específica
+   * @param {Object} venda - Objeto de venda
+   * @returns {number} Valor total da venda
+   */
   const calcularValorTotalVenda = (venda) => {
     if (!venda.itens) return 0;
     return venda.itens.reduce((total, item) => {
@@ -177,13 +230,18 @@ function HomeAdm() {
     }, 0);
   };
 
+  /**
+   * Calcula valor total de todas as vendas
+   * @param {Array} vendas - Lista de todas as vendas
+   * @returns {number} Valor total das vendas
+   */
   const calcularValorTotalVendas = (vendas) => {
     return vendas.filter(v => !v.dataExclusao).reduce((total, venda) => {
       return total + calcularValorTotalVenda(venda);
     }, 0);
   };
 
-  // Configurações dos gráficos
+  // Configurações comuns para todos os gráficos
   const opcoesComuns = {
     responsive: true,
     plugins: {
@@ -193,7 +251,7 @@ function HomeAdm() {
     },
   };
 
-  // Dados para gráfico de clientes
+  // Dados para gráfico de distribuição de clientes
   const dadosClientes = {
     labels: ['Ativos', 'Inativos', 'Funcionários', 'Administradores'],
     datasets: [
@@ -206,16 +264,16 @@ function HomeAdm() {
           dados.clientes.administradores
         ] : [0, 0, 0, 0],
         backgroundColor: [
-          '#0055ff',
-          '#ff4444',
-          '#00C49F',
-          '#FFBB28'
+          '#0055ff',  // Azul para clientes ativos
+          '#ff4444',  // Vermelho para clientes inativos
+          '#00C49F',  // Verde para funcionários
+          '#FFBB28'   // Amarelo para administradores
         ],
       },
     ],
   };
 
-  // Dados para gráfico de vendas
+  // Dados para gráfico de vendas por mês
   const dadosVendas = {
     labels: dados?.vendas.porMes.meses || [],
     datasets: [
@@ -225,17 +283,11 @@ function HomeAdm() {
         borderColor: '#0055ff',
         backgroundColor: 'rgba(0, 85, 255, 0.1)',
         yAxisID: 'y',
-      },
-      {
-        label: 'Valor (R$)',
-        data: dados?.vendas.porMes.valores || [],
-        borderColor: '#00C49F',
-        backgroundColor: 'rgba(0, 196, 159, 0.1)',
-        yAxisID: 'y1',
-      },
+      }
     ],
   };
 
+  // Configurações específicas para gráfico de vendas (duplo eixo Y)
   const opcoesVendas = {
     ...opcoesComuns,
     scales: {
@@ -248,22 +300,10 @@ function HomeAdm() {
           text: 'Quantidade'
         }
       },
-      y1: {
-        type: 'linear',
-        display: true,
-        position: 'right',
-        title: {
-          display: true,
-          text: 'Valor (R$)'
-        },
-        grid: {
-          drawOnChartArea: false,
-        },
-      },
     },
   };
 
-  // Dados para gráfico de produtos
+  // Dados para gráfico de produtos mais vendidos
   const dadosProdutos = {
     labels: dados?.produtos.maisVendidos.map(p => p.nome) || [],
     datasets: [
@@ -281,6 +321,10 @@ function HomeAdm() {
     ],
   };
 
+  /**
+   * Renderiza estado de carregamento
+   * Mostra componente Loading enquanto dados são carregados
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -293,10 +337,15 @@ function HomeAdm() {
     );
   }
 
+  /**
+   * Renderiza o dashboard administrativo completo
+   * Inclui cards de resumo, controles e gráficos
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
       
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h1 className={styles.title}>Dashboard Administrativo</h1>
         <button className={styles.reloadButton} onClick={carregarDados}>
@@ -304,7 +353,7 @@ function HomeAdm() {
         </button>
       </div>
 
-      {/* Cards de Resumo */}
+      {/* Cards de resumo com métricas principais */}
       <div className={styles.cardsContainer}>
         <div className={styles.card}>
           <h3>Total de Clientes</h3>
@@ -342,7 +391,7 @@ function HomeAdm() {
         </div>
       </div>
 
-      {/* Controles do Gráfico */}
+      {/* Controles para alternar entre tipos de gráfico */}
       <div className={styles.controls}>
         <button
           className={tipo === "vendas" ? styles.active : ""}
@@ -364,8 +413,9 @@ function HomeAdm() {
         </button>
       </div>
 
-      {/* Área do Gráfico */}
+      {/* Container principal para os gráficos */}
       <div className={styles.chartsContainer}>
+        {/* Gráfico de distribuição de clientes */}
         {tipo === "clientes" && (
           <div className={styles.chartBox}>
             <h3>Distribuição de Usuários</h3>
@@ -373,6 +423,7 @@ function HomeAdm() {
           </div>
         )}
 
+        {/* Gráfico de vendas por mês */}
         {tipo === "vendas" && (
           <div className={styles.chartBox}>
             <h3>Vendas dos Últimos 6 Meses</h3>
@@ -380,6 +431,7 @@ function HomeAdm() {
           </div>
         )}
 
+        {/* Gráfico de produtos mais vendidos */}
         {tipo === "produtos" && (
           <div className={styles.chartBox}>
             <h3>Produtos Mais Vendidos</h3>

@@ -5,11 +5,17 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./BotaoRetorno.module.css";
 
+/**
+ * Componente de botão de retorno para navegação
+ * @component
+ * @returns {JSX.Element} Botão de retorno estilizado
+ */
 function BotaoRetorno() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook do React Router para navegação programática
 
   return (
     <button className={styles.botao} onClick={() => navigate(-1)}>
+      {/* Seta Unicode que aponta para a esquerda, indicando retorno */}
       <span className={styles.seta}>&#x276E;</span>
     </button>
   );

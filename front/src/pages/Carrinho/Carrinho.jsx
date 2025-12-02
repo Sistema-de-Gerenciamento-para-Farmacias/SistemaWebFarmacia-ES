@@ -1,4 +1,5 @@
-// Carrinho.jsx - VERSÃO CORRIGIDA
+// Carrinho.jsx
+
 import { useState, useMemo, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CarrinhoContext } from "../../context/CarrinhoContext";
@@ -8,9 +9,22 @@ import MessageBox from "../../components/MessageBox/MessageBox";
 import Loading from "../../components/Loading/Loading";
 import styles from "./Carrinho.module.css";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente da página do carrinho de compras
+ * @component
+ * @returns {JSX.Element} Página do carrinho com funcionalidades completas
+ */
 export function Carrinho() {
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token de autenticação do contexto
   const { token } = useContext(AuthContext);
+  
+  // Obtém funções e estado do contexto do carrinho
   const { 
     carrinho, 
     removerDoCarrinho, 
@@ -20,21 +34,33 @@ export function Carrinho() {
     loading 
   } = useContext(CarrinhoContext);
   
+  // Estado para itens selecionados no carrinho
   const [selecionados, setSelecionados] = useState([]);
+  
+  // Estado para mensagens de feedback
   const [mensagem, setMensagem] = useState("");
-  const [atualizando, setAtualizando] = useState({}); // Controla quais itens estão sendo atualizados
+  
+  // Estado para controlar quais itens estão sendo atualizados
+  const [atualizando, setAtualizando] = useState({});
 
   // CORREÇÃO: Garantir que carrinho seja sempre um array
+  // Evita erros se o backend retornar algo diferente
   const carrinhoArray = Array.isArray(carrinho) ? carrinho : [];
 
-  // Carrega carrinho ao montar o componente
+  /**
+   * Efeito para carregar o carrinho quando o componente é montado
+   * Executa sempre que o token ou a função carregarCarrinho muda
+   */
   useEffect(() => {
     if (token) {
       carregarCarrinho();
     }
   }, [token, carregarCarrinho]);
 
-  // Calcula total apenas dos selecionados
+  /**
+   * Calcula o valor total dos itens selecionados
+   * Utiliza useMemo para otimização, recalculando apenas quando necessário
+   */
   const total = useMemo(() => {
     return selecionados.reduce((acc, idItemCarrinho) => {
       const item = carrinhoArray.find((it) => it.idItemCarrinho === idItemCarrinho);
@@ -45,6 +71,10 @@ export function Carrinho() {
     }, 0);
   }, [selecionados, carrinhoArray]);
 
+  /**
+   * Alterna a seleção de um item no carrinho
+   * @param {number|string} idItemCarrinho - ID do item do carrinho
+   */
   const toggleSelecao = (idItemCarrinho) => {
     setSelecionados((prev) =>
       prev.includes(idItemCarrinho) 
@@ -53,20 +83,32 @@ export function Carrinho() {
     );
   };
 
+  /**
+   * Remove um item específico do carrinho
+   * @async
+   * @param {number|string} idItemCarrinho - ID do item a ser removido
+   */
   const handleRemover = async (idItemCarrinho) => {
     try {
       await removerDoCarrinho(idItemCarrinho);
       setSelecionados((prev) => prev.filter((id) => id !== idItemCarrinho));
-      setMensagem("✅ Item removido do carrinho!");
+      setMensagem("Item removido do carrinho!");
       setTimeout(() => setMensagem(""), 3000);
     } catch (error) {
-      setMensagem(`❌ Erro ao remover item: ${error.message}`);
+      setMensagem(`Erro ao remover item: ${error.message}`);
     }
   };
 
+  /**
+   * Atualiza a quantidade de um item no carrinho
+   * @async
+   * @param {number|string} idItemCarrinho - ID do item do carrinho
+   * @param {number} novaQuantidade - Nova quantidade desejada
+   */
   const handleAtualizarQuantidade = async (idItemCarrinho, novaQuantidade) => {
+    // Validação: quantidade mínima é 1
     if (novaQuantidade < 1) {
-      setMensagem("❌ Quantidade deve ser pelo menos 1");
+      setMensagem("Quantidade deve ser pelo menos 1");
       setTimeout(() => setMensagem(""), 3000);
       return;
     }
@@ -78,7 +120,7 @@ export function Carrinho() {
       await atualizarQuantidade(idItemCarrinho, novaQuantidade);
       // CORREÇÃO: Não mostrar mensagem para atualizações normais
     } catch (error) {
-      setMensagem(`❌ Erro ao atualizar quantidade: ${error.message}`);
+      setMensagem(`Erro ao atualizar quantidade: ${error.message}`);
       setTimeout(() => setMensagem(""), 3000);
     } finally {
       // CORREÇÃO: Remover marcação de atualização
@@ -86,9 +128,14 @@ export function Carrinho() {
     }
   };
 
+  /**
+   * Processa a compra dos itens selecionados
+   * Redireciona para a página de pagamento com os dados necessários
+   */
   const handleComprar = () => {
+    // Verifica se há itens selecionados
     if (selecionados.length === 0) {
-      setMensagem("❌ Selecione pelo menos um item para comprar");
+      setMensagem("Selecione pelo menos um item para comprar");
       setTimeout(() => setMensagem(""), 3000);
       return;
     }
@@ -102,6 +149,7 @@ export function Carrinho() {
       };
     });
 
+    // Navega para página de pagamento com os dados
     navigate("/simulaPagamento", { 
       state: { 
         itensVenda,
@@ -111,17 +159,25 @@ export function Carrinho() {
     });
   };
 
+  /**
+   * Limpa todo o carrinho de compras
+   * @async
+   */
   const handleLimparCarrinho = async () => {
     try {
       await limparCarrinho();
       setSelecionados([]);
-      setMensagem("✅ Carrinho limpo com sucesso!");
+      setMensagem("Carrinho limpo com sucesso!");
       setTimeout(() => setMensagem(""), 3000);
     } catch (error) {
-      setMensagem(`❌ Erro ao limpar carrinho: ${error.message}`);
+      setMensagem(`Erro ao limpar carrinho: ${error.message}`);
     }
   };
 
+  /**
+   * Renderiza estado de carregamento
+   * Mostra componente Loading enquanto dados são carregados
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -134,6 +190,10 @@ export function Carrinho() {
     );
   }
 
+  /**
+   * Renderiza estado de carrinho vazio
+   * Mostra mensagem amigável e botão para continuar comprando
+   */
   if (carrinhoArray.length === 0) {
     return (
       <div className={styles.container}>
@@ -152,6 +212,10 @@ export function Carrinho() {
     );
   }
 
+  /**
+   * Renderiza o carrinho com itens
+   * Interface principal com tabela de itens e resumo do pedido
+   */
   return (
     <div className={styles.container}>
       <NavBarCliente />
@@ -159,10 +223,12 @@ export function Carrinho() {
       <h1 className={styles.titulo}>🛒 Meu Carrinho</h1>
 
       <div className={styles.content}>
+        {/* Seção de itens do carrinho em formato de tabela */}
         <div className={styles.listaItens}>
           <table className={styles.tabela}>
             <thead>
               <tr>
+                {/* Checkbox para selecionar todos os itens */}
                 <th style={{ width: "50px" }}>
                   <input
                     type="checkbox"
@@ -184,6 +250,7 @@ export function Carrinho() {
               </tr>
             </thead>
             <tbody>
+              {/* Mapeia cada item do carrinho para uma linha na tabela */}
               {carrinhoArray.map((item) => (
                 <tr 
                   key={item.idItemCarrinho}
@@ -236,6 +303,7 @@ export function Carrinho() {
                         +
                       </button>
                     </div>
+                    {/* Indicador visual de atualização em andamento */}
                     {atualizando[item.idItemCarrinho] && (
                       <div className={styles.atualizandoIndicator}>⟳</div>
                     )}
@@ -258,6 +326,7 @@ export function Carrinho() {
             </tbody>
           </table>
 
+          {/* Botões de ação para o carrinho */}
           <div className={styles.acoesCarrinho}>
             <button 
               className={styles.btnLimpar}
@@ -268,6 +337,7 @@ export function Carrinho() {
           </div>
         </div>
 
+        {/* Seção de resumo do pedido */}
         <div className={styles.resumo}>
           <h3>📋 Resumo do Pedido</h3>
           
@@ -291,6 +361,7 @@ export function Carrinho() {
             </div>
           </div>
 
+          {/* Botões de navegação e ação */}
           <div className={styles.botoes}>
             <button
               className={styles.btnContinuar}
@@ -307,6 +378,7 @@ export function Carrinho() {
             </button>
           </div>
 
+          {/* Seção de benefícios para o cliente */}
           <div className={styles.beneficios}>
             <h4>🎁 Benefícios</h4>
             <ul>
@@ -318,6 +390,7 @@ export function Carrinho() {
         </div>
       </div>
 
+      {/* Componente de mensagem para feedback ao usuário */}
       {mensagem && (
         <MessageBox 
           message={mensagem} 

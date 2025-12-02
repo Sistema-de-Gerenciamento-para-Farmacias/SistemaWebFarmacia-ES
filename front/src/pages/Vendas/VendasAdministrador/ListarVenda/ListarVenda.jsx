@@ -3,16 +3,29 @@ import { useState, useContext, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ListarVenda.module.css";
 
+// Componentes importados
 import NavBarAdm from "../../../../components/NavBarAdm/NavBarAdm";
 import ConfirmModal from "../../../../components/ConfirmModal/ConfirmModal";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 import { AuthContext } from "../../../../context/AuthContext";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para listagem de vendas com funcionalidades administrativas
+ * @component
+ * @returns {JSX.Element} Tabela de vendas com busca, exclusão e navegação
+ */
 function ListarVenda() {
+  // Hook para navegação programática
   const navigate = useNavigate();
+  
+  // Contexto de autenticação
   const { logout, token } = useContext(AuthContext);
 
+  // Estados principais
   const [vendas, setVendas] = useState([]);
   const [busca, setBusca] = useState("");
   const [confirmId, setConfirmId] = useState(null);
@@ -20,6 +33,9 @@ function ListarVenda() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
 
+  /**
+   * Efeito para carregar vendas quando componente monta
+   */
   useEffect(() => {
     if (token) {
       carregarVendas();
@@ -29,11 +45,16 @@ function ListarVenda() {
     }
   }, [token]);
 
+  /**
+   * Carrega lista de vendas do backend
+   * @async
+   */
   const carregarVendas = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/venda/all', {
+      // Requisição GET para obter todas as vendas
+      const response = await fetch(`${API_URL}/venda/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -41,19 +62,16 @@ function ListarVenda() {
         }
       });
 
-      console.log('📥 Resposta do backend - Vendas:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Dados recebidos do backend:', data);
         
-        // Ordenar por data mais recente primeiro
+        // Ordena por data mais recente primeiro
         const vendasOrdenadas = data.sort((a, b) => 
           new Date(b.dataCompra) - new Date(a.dataCompra)
         );
         
         setVendas(vendasOrdenadas);
-        console.log(`✅ ${vendasOrdenadas.length} vendas carregadas`);
       } else if (response.status === 401) {
         setMessage("ERRO: Não autorizado. Token inválido ou expirado.");
         logout();
@@ -71,19 +89,24 @@ function ListarVenda() {
     }
   };
 
+  /**
+   * Exclui (marca como excluída) uma venda
+   * @async
+   * @param {number|string} id - ID da venda a excluir
+   */
   const excluirVenda = async (id) => {
     try {
       setDeletingId(id);
       
-      console.log('🗑️ Tentando excluir venda ID:', id, 'Tipo:', typeof id);
-      
+      // Converte ID para número
       const idNumerico = Number(id);
       if (isNaN(idNumerico)) {
         setMessage("ERRO: ID da venda inválido");
         return;
       }
 
-      const response = await fetch(`http://localhost:8080/venda/delete/${idNumerico}`, {
+      // Requisição DELETE para excluir venda
+      const response = await fetch(`${API_URL}/venda/delete/${idNumerico}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -91,12 +114,11 @@ function ListarVenda() {
         }
       });
 
-      console.log('📤 Resposta da exclusão:', response.status);
-
+      // Processa resposta
       if (response.ok) {
         setMessage("SUCESSO: Venda marcada como excluída!");
         
-        // Recarregar a lista do backend
+        // Recarrega lista após exclusão
         setTimeout(() => {
           carregarVendas();
         }, 500);
@@ -118,7 +140,11 @@ function ListarVenda() {
     }
   };
 
-  // Formata data para exibição: "2024-01-15" -> "15/01/2024"
+  /**
+   * Formata data para o padrão brasileiro (DD/MM/AAAA)
+   * @param {string} dateString - Data em formato ISO ou string
+   * @returns {string} Data formatada ou 'N/A' se inválida
+   */
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -134,7 +160,11 @@ function ListarVenda() {
     }
   };
 
-  // Calcula valor total da venda
+  /**
+   * Calcula valor total de uma venda
+   * @param {Object} venda - Objeto da venda
+   * @returns {number} Valor total calculado
+   */
   const calcularValorTotal = (venda) => {
     if (!venda.itens || !Array.isArray(venda.itens)) return 0;
     return venda.itens.reduce((total, item) => {
@@ -142,11 +172,19 @@ function ListarVenda() {
     }, 0);
   };
 
-  // Verifica se venda está ativa
+  /**
+   * Verifica se uma venda está ativa
+   * @param {Object} venda - Objeto da venda
+   * @returns {boolean} true se ativa, false se excluída
+   */
   const estaAtiva = (venda) => {
     return !venda.dataExclusao;
   };
 
+  /**
+   * Filtra vendas com base no termo de busca
+   * Utiliza useMemo para otimizar performance
+   */
   const filtrados = useMemo(() => {
     if (!busca.trim()) return vendas;
     
@@ -165,12 +203,18 @@ function ListarVenda() {
     });
   }, [vendas, busca]);
 
+  /**
+   * Recarrega lista de vendas
+   */
   const recarregarVendas = () => {
     carregarVendas();
   };
 
+  /**
+   * Navega para página de edição da venda
+   * @param {number|string} id - ID da venda
+   */
   const handleEditar = (id) => {
-    console.log('🔄 Tentando editar venda ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -180,8 +224,11 @@ function ListarVenda() {
     navigate(`/editarVenda/${idNumerico}`);
   };
 
+  /**
+   * Navega para página de detalhes da venda
+   * @param {number|string} id - ID da venda
+   */
   const handleDetalhes = (id) => {
-    console.log('👁️ Tentando ver detalhes da venda ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -191,17 +238,24 @@ function ListarVenda() {
     navigate(`/detalhesVenda/${idNumerico}`);
   };
 
+  /**
+   * Navega para página de nova venda
+   */
   const handleNovaVenda = () => {
     navigate("/novaVenda");
   };
 
+  // Renderização principal
   return (
     <div className={styles.container}>
+      {/* Barra de navegação administrativa */}
       <NavBarAdm />
 
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Lista de Vendas</h2>
         <div className={styles.headerActions}>
+          {/* Botão para recarregar lista */}
           <button 
             className={styles.reloadButton}
             onClick={recarregarVendas}
@@ -210,6 +264,8 @@ function ListarVenda() {
           >
             Atualizar
           </button>
+          
+          {/* Botão para criar nova venda */}
           <button 
             className={styles.createButton}
             onClick={handleNovaVenda}
@@ -217,12 +273,15 @@ function ListarVenda() {
           >
             Nova Venda
           </button>
+          
+          {/* Botão de logout */}
           <button className={styles.logoutTop} onClick={logout}>
             Logout
           </button>
         </div>
       </div>
 
+      {/* Barra de busca */}
       <div className={styles.topBar}>
         <div className={styles.searchGroup}>
           <input
@@ -235,6 +294,7 @@ function ListarVenda() {
         </div>
       </div>
 
+      {/* Conteúdo principal - carregamento ou tabela */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <Loading />
@@ -242,6 +302,7 @@ function ListarVenda() {
         </div>
       ) : (
         <>
+          {/* Barra de informações */}
           <div className={styles.infoBar}>
             <span className={styles.totalVendas}>
               Total: {filtrados.length} venda{filtrados.length !== 1 ? 's' : ''}
@@ -256,6 +317,7 @@ function ListarVenda() {
             </span>
           </div>
 
+          {/* Tabela de vendas */}
           <table className={styles.table}>
             <thead>
               <tr>
@@ -268,6 +330,7 @@ function ListarVenda() {
               </tr>
             </thead>
             <tbody>
+              {/* Linhas de vendas */}
               {filtrados.map((venda) => (
                 <tr key={venda.idVenda} className={!estaAtiva(venda) ? styles.inativo : ''}>
                   <td className={styles.idVenda}>#{venda.idVenda}</td>
@@ -284,6 +347,7 @@ function ListarVenda() {
                     </span>
                   </td>
                   <td className={styles.actionsCell}>
+                    {/* Botão de edição */}
                     <button
                       className={styles.editButton}
                       onClick={() => handleEditar(venda.idVenda)}
@@ -292,6 +356,8 @@ function ListarVenda() {
                     >
                       Editar
                     </button>
+                    
+                    {/* Botão de exclusão */}
                     <button
                       className={styles.deleteButton}
                       onClick={() => setConfirmId(venda.idVenda)}
@@ -300,6 +366,8 @@ function ListarVenda() {
                     >
                       {estaAtiva(venda) ? "Excluir" : "Excluída"}
                     </button>
+                    
+                    {/* Botão de detalhes */}
                     <button
                       className={styles.detailsButton}
                       onClick={() => handleDetalhes(venda.idVenda)}
@@ -310,6 +378,8 @@ function ListarVenda() {
                   </td>
                 </tr>
               ))}
+              
+              {/* Mensagem para lista vazia */}
               {filtrados.length === 0 && (
                 <tr>
                   <td colSpan={6} className={styles.empty}>
@@ -322,6 +392,7 @@ function ListarVenda() {
         </>
       )}
 
+      {/* Modal de confirmação para exclusão */}
       {confirmId && (
         <ConfirmModal
           message="Deseja realmente marcar esta venda como excluída? Ela não aparecerá mais nas operações ativas."
@@ -330,6 +401,7 @@ function ListarVenda() {
         />
       )}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

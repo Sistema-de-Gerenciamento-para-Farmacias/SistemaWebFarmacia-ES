@@ -1,4 +1,5 @@
 // front/src/pages/Pessoas/Clientes/CadastroClientes.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CadastroClientes.module.css";
@@ -6,11 +7,17 @@ import BotaoRetorno from "../../../../components/BotaoRetorno/BotaoRetorno";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
 /**
  * Componente de Cadastro de Clientes - Registra novos usuários no sistema
- * Valida dados localmente e envia para o backend com tratamento completo de erros
+ * @component
+ * @returns {JSX.Element} Formulário de cadastro de cliente
+ * @description Valida dados localmente e envia para o backend com tratamento completo de erros
  */
 function CadastroClientes() {
+  // Estado para dados do formulário
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -18,12 +25,19 @@ function CadastroClientes() {
     cpf: "",
     telefone: "",
   });
+  
+  // Estado para controlar carregamento durante envio
   const [loading, setLoading] = useState(false);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState(null);
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
 
   /**
    * Atualiza estado do formulário conforme digitação
+   * @param {Event} e - Evento de mudança do input
    */
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,7 +58,7 @@ function CadastroClientes() {
     const cpfNumerico = formData.cpf.replace(/\D/g, '');
     const telefoneNumerico = formData.telefone.replace(/\D/g, '');
 
-    // Validações específicas
+    // Validações específicas usando expressões regulares
     const cpfOK = /^\d{11}$/.test(cpfNumerico);
     const telOK = /^\d{10,11}$/.test(telefoneNumerico);
     const emailOK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
@@ -73,7 +87,9 @@ function CadastroClientes() {
 
   /**
    * Processa o cadastro do cliente
-   * Envia dados para o backend e trata a resposta
+   * @async
+   * @param {Event} e - Evento de submit do formulário
+   * @description Envia dados para o backend e trata a resposta
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +97,7 @@ function CadastroClientes() {
     // Validação local antes de enviar para o backend
     if (!validarCampos()) return;
 
+    // Inicia estado de carregamento
     setLoading(true);
     setMessage(null);
     
@@ -95,10 +112,10 @@ function CadastroClientes() {
         tipoUsuario: "USER" // Sempre USER para cadastro de cliente
       };
 
-      console.log("📤 Enviando dados para cadastro:", dadosParaEnviar);
+      console.log("Enviando dados para cadastro:", dadosParaEnviar);
 
       // Requisição para o endpoint de registro
-      const response = await fetch('http://localhost:8080/register', {
+      const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,8 +127,8 @@ function CadastroClientes() {
       if (response.ok) {
         const data = await response.json();
         
-        // ✅ SUCESSO: Cadastro realizado
-        setMessage("✅ SUCESSO: Cliente cadastrado com sucesso! Redirecionando para login...");
+        // SUCESSO: Cadastro realizado
+        setMessage("SUCESSO: Cliente cadastrado com sucesso! Redirecionando para login...");
         
         // Redireciona para login após sucesso
         setTimeout(() => {
@@ -119,10 +136,10 @@ function CadastroClientes() {
         }, 2000);
         
       } else {
-        // ❌ ERRO: Backend retornou erro
+        // ERRO: Backend retornou erro
         const errorData = await response.json();
         
-        // Extrai mensagem de erro do backend
+        // Extrai mensagem de erro do backend em diferentes formatos
         let backendErrorMessage = "Falha no cadastro";
         
         if (errorData.message) {
@@ -136,30 +153,34 @@ function CadastroClientes() {
           backendErrorMessage = errorData.error_description || errorData.error;
         }
         
-        setMessage(`❌ ERRO: ${backendErrorMessage}`);
+        setMessage(`ERRO: ${backendErrorMessage}`);
       }
       
     } catch (error) {
-      // ❌ ERRO: Falha na comunicação com o servidor
+      // ERRO: Falha na comunicação com o servidor
       console.error("Erro completo:", error);
       
       let errorMessage = "Erro desconhecido";
       
+      // Trata diferentes tipos de erro de rede/JSON
       if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
         errorMessage = "Não foi possível conectar ao servidor. Verifique se o backend está rodando.";
       } else if (error.message) {
         errorMessage = error.message;
       }
       
-      setMessage(`❌ ERRO: ${errorMessage}`);
+      setMessage(`ERRO: ${errorMessage}`);
       
     } finally {
+      // Finaliza estado de carregamento independente do resultado
       setLoading(false);
     }
   };
 
   /**
-   * Formata CPF durante a digitação (XXX.XXX.XXX-XX)
+   * Formata CPF durante a digitação: 12345678901 -> 123.456.789-01
+   * @param {string} value - CPF sem formatação
+   * @returns {string} CPF formatado
    */
   const formatarCPF = (value) => {
     const numbers = value.replace(/\D/g, '');
@@ -170,7 +191,9 @@ function CadastroClientes() {
   };
 
   /**
-   * Formata telefone durante a digitação ((XX) XXXXX-XXXX)
+   * Formata telefone durante a digitação: 11999998888 -> (11) 99999-8888
+   * @param {string} value - Telefone sem formatação
+   * @returns {string} Telefone formatado
    */
   const formatarTelefone = (value) => {
     const numbers = value.replace(/\D/g, '');
@@ -183,24 +206,38 @@ function CadastroClientes() {
   };
 
   /**
-   * Handlers específicos para campos formatados
+   * Handler específico para campo CPF com formatação automática
+   * @param {Event} e - Evento de mudança do input
    */
   const handleCpfChange = (e) => {
     const formatted = formatarCPF(e.target.value);
     setFormData({ ...formData, cpf: formatted });
   };
 
+  /**
+   * Handler específico para campo telefone com formatação automática
+   * @param {Event} e - Evento de mudança do input
+   */
   const handleTelefoneChange = (e) => {
     const formatted = formatarTelefone(e.target.value);
     setFormData({ ...formData, telefone: formatted });
   };
 
+  /**
+   * Renderiza o formulário de cadastro de cliente
+   */
   return (
     <div className={styles.container}>
+      {/* Botão para retornar à página anterior */}
       <BotaoRetorno />
+      
+      {/* Card principal do formulário */}
       <div className={styles.card}>
         <h2 className={styles.title}>Cadastro</h2>
+        
+        {/* Formulário de cadastro */}
         <form onSubmit={handleSubmit} className={styles.form}>
+          {/* Campo: Nome Completo */}
           <input
             type="text"
             name="nome"
@@ -210,6 +247,8 @@ function CadastroClientes() {
             className={styles.input}
             required
           />
+          
+          {/* Campo: Email */}
           <input
             type="email"
             name="email"
@@ -219,6 +258,8 @@ function CadastroClientes() {
             className={styles.input}
             required
           />
+          
+          {/* Campo: Senha */}
           <input
             type="password"
             name="senha"
@@ -229,6 +270,8 @@ function CadastroClientes() {
             minLength="3"
             required
           />
+          
+          {/* Campo: CPF com formatação automática */}
           <input
             type="text"
             name="cpf"
@@ -239,6 +282,8 @@ function CadastroClientes() {
             maxLength="14"
             required
           />
+          
+          {/* Campo: Telefone com formatação automática */}
           <input
             type="text"
             name="telefone"
@@ -249,10 +294,14 @@ function CadastroClientes() {
             maxLength="15"
             required
           />
+          
+          {/* Botão de submit do formulário */}
           <button type="submit" className={styles.button} disabled={loading}>
             {loading ? "Cadastrando..." : "Cadastrar"}
           </button>
         </form>
+        
+        {/* Link para página de login */}
         <p className={styles.textoLogin}>
           Já tem uma conta?{" "}
           <span 

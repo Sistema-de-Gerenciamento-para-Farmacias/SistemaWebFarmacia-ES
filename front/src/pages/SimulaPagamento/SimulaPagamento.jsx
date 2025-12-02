@@ -1,3 +1,4 @@
+// front/src/pages/SimulaPagamento/SimulaPagamento.jsx
 import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
@@ -6,12 +7,26 @@ import MessageBox from "../../components/MessageBox/MessageBox";
 import Loading from "../../components/Loading/Loading";
 import styles from "./SimulaPagamento.module.css";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para simulação de pagamento e finalização de compra
+ * @component
+ * @returns {JSX.Element} Página de pagamento com formulário e resumo do pedido
+ */
 export function SimulaPagamento() {
+  // Hook para acessar o estado da navegação
   const location = useLocation();
+  
+  // Hook para navegação programática
   const navigate = useNavigate();
+  
+  // Contextos para autenticação e carrinho
   const { token, user } = useContext(AuthContext);
   const { limparCarrinho } = useContext(CarrinhoContext);
   
+  // Estados para controle do componente
   const [processando, setProcessando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [form, setForm] = useState({
@@ -21,24 +36,30 @@ export function SimulaPagamento() {
     cvv: "",
   });
 
+  // Obtém dados da venda passados pela navegação ou inicializa com valores padrão
   const { itensVenda, total, carrinhoItens } = location.state || { 
     itensVenda: [], 
     total: 0, 
     carrinhoItens: [] 
   };
 
+  /**
+   * Manipula mudanças nos campos do formulário
+   * @param {Event} e - Evento de mudança do input
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
     let formattedValue = value;
     
+    // Formata número do cartão: "1234567890123456" -> "1234 5678 9012 3456"
     if (name === "numeroCartao") {
       formattedValue = value
-        .replace(/\D/g, "")
-        .replace(/(\d{4})(?=\d)/g, "$1 ")
-        .slice(0, 19);
+        .replace(/\D/g, "") // Remove não dígitos
+        .replace(/(\d{4})(?=\d)/g, "$1 ") // Adiciona espaço a cada 4 dígitos
+        .slice(0, 19); // Limita a 19 caracteres (16 dígitos + 3 espaços)
     }
     
+    // Formata data de validade: "1225" -> "12/25"
     if (name === "validade") {
       formattedValue = value
         .replace(/\D/g, "")
@@ -46,37 +67,56 @@ export function SimulaPagamento() {
         .slice(0, 5);
     }
     
+    // Limita CVV a 4 dígitos numéricos
     if (name === "cvv") {
       formattedValue = value.replace(/\D/g, "").slice(0, 4);
     }
     
+    // Atualiza estado do formulário
     setForm((prev) => ({ ...prev, [name]: formattedValue }));
   };
 
+  /**
+   * Valida os dados do formulário de pagamento
+   * @returns {boolean} true se válido, false se inválido
+   */
   const validarFormulario = () => {
+    // Valida número do cartão (mínimo 13 dígitos após remover espaços)
     if (!form.numeroCartao || form.numeroCartao.replace(/\s/g, "").length < 13) {
-      setMensagem("❌ Número de cartão inválido");
+      setMensagem("Número de cartão inválido");
       return false;
     }
+    
+    // Valida nome do titular (não pode estar vazio)
     if (!form.nomeCartao.trim()) {
-      setMensagem("❌ Nome do titular inválido");
+      setMensagem("Nome do titular inválido");
       return false;
     }
+    
+    // Valida data de validade (formato MM/AA completo)
     if (!form.validade || form.validade.length !== 5) {
-      setMensagem("❌ Validade inválida (MM/AA)");
+      setMensagem("Validade inválida (MM/AA)");
       return false;
     }
+    
+    // Valida CVV (mínimo 3 dígitos)
     if (!form.cvv || form.cvv.length < 3) {
-      setMensagem("❌ CVV inválido");
+      setMensagem("CVV inválido");
       return false;
     }
+    
     return true;
   };
 
-  // CORREÇÃO: Buscar o ID do usuário logado
+  /**
+   * Busca o ID do usuário logado no backend
+   * @async
+   * @returns {Promise<number|null>} ID do usuário ou null se não encontrado
+   */
   const buscarUsuarioLogado = async () => {
     try {
-      const response = await fetch('http://localhost:8080/pessoa/all', {
+      // Requisição para obter todas as pessoas cadastradas
+      const response = await fetch(`${API_URL}/pessoa/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -86,7 +126,7 @@ export function SimulaPagamento() {
 
       if (response.ok) {
         const pessoas = await response.json();
-        // Encontrar o usuário pelo email do token
+        // Encontra usuário pelo email do token
         const usuarioLogado = pessoas.find(p => p.email === user?.email);
         return usuarioLogado?.id;
       }
@@ -97,23 +137,30 @@ export function SimulaPagamento() {
     }
   };
 
+  /**
+   * Cria uma nova venda no backend
+   * @async
+   * @returns {Promise<Object>} Dados da venda criada
+   * @throws {Error} Se ocorrer erro na criação
+   */
   const criarVenda = async () => {
     try {
-      // CORREÇÃO: Buscar o ID do usuário em vez de usar o email
+      // Obtém ID do usuário logado
       const idUsuario = await buscarUsuarioLogado();
       
       if (!idUsuario) {
         throw new Error('Não foi possível identificar o usuário');
       }
 
-      const response = await fetch('http://localhost:8080/venda/create', {
+      // Requisição para criar venda
+      const response = await fetch(`${API_URL}/venda/create`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          idUsuario: idUsuario, // CORREÇÃO: Enviar ID numérico
+          idUsuario: idUsuario, // ID numérico do usuário
           itens: itensVenda
         })
       });
@@ -129,10 +176,16 @@ export function SimulaPagamento() {
     }
   };
 
+  /**
+   * Remove itens do carrinho após a compra
+   * @async
+   * @returns {Promise<boolean>} true se removido com sucesso
+   */
   const removerItensDoCarrinho = async () => {
     try {
+      // Cria array de promessas para remover cada item do carrinho
       const promises = carrinhoItens.map(item => 
-        fetch(`http://localhost:8080/carrinho/remover/${item.idItemCarrinho}`, {
+        fetch(`${API_URL}/carrinho/remover/${item.idItemCarrinho}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -141,6 +194,7 @@ export function SimulaPagamento() {
         })
       );
       
+      // Executa todas as requisições em paralelo
       await Promise.all(promises);
       return true;
     } catch (error) {
@@ -149,20 +203,27 @@ export function SimulaPagamento() {
     }
   };
 
+  /**
+   * Processa a confirmação do pagamento
+   * @async
+   */
   const handleConfirmar = async () => {
+    // Valida formulário
     if (!validarFormulario()) {
       setTimeout(() => setMensagem(""), 3000);
       return;
     }
 
+    // Verifica autenticação
     if (!user || !token) {
-      setMensagem("❌ Usuário não autenticado");
+      setMensagem("Usuário não autenticado");
       setTimeout(() => setMensagem(""), 3000);
       return;
     }
 
+    // Verifica se há itens para comprar
     if (itensVenda.length === 0) {
-      setMensagem("❌ Nenhum item selecionado para compra");
+      setMensagem("Nenhum item selecionado para compra");
       setTimeout(() => setMensagem(""), 3000);
       return;
     }
@@ -179,8 +240,10 @@ export function SimulaPagamento() {
       // 3. Atualizar contexto local
       await limparCarrinho();
       
-      setMensagem("✅ Compra realizada com sucesso!");
+      // 4. Feedback de sucesso
+      setMensagem("Compra realizada com sucesso!");
       
+      // 5. Redireciona para página de compras após 2 segundos
       setTimeout(() => {
         navigate("/minhasCompras", { 
           replace: true,
@@ -190,17 +253,21 @@ export function SimulaPagamento() {
 
     } catch (error) {
       console.error('Erro ao processar compra:', error);
-      setMensagem(`❌ Erro ao processar compra: ${error.message}`);
+      setMensagem(`Erro ao processar compra: ${error.message}`);
     } finally {
       setProcessando(false);
       setTimeout(() => setMensagem(""), 5000);
     }
   };
 
+  /**
+   * Cancela o processo de pagamento e volta ao carrinho
+   */
   const handleCancelar = () => {
     navigate("/carrinho");
   };
 
+  // Renderização para carrinho vazio
   if (itensVenda.length === 0) {
     return (
       <div className={styles.container}>
@@ -218,11 +285,13 @@ export function SimulaPagamento() {
     );
   }
 
+  // Renderização principal
   return (
     <div className={styles.container}>
       <h1 className={styles.titulo}>💳 Finalizar Compra</h1>
 
       <div className={styles.content}>
+        {/* Resumo do pedido */}
         <div className={styles.resumo}>
           <h3>📦 Resumo do Pedido</h3>
           <table className={styles.tabela}>
@@ -262,6 +331,7 @@ export function SimulaPagamento() {
           </div>
         </div>
 
+        {/* Formulário de pagamento */}
         <form className={styles.formulario} onSubmit={(e) => e.preventDefault()}>
           <h3>💳 Dados de Pagamento</h3>
 
@@ -320,11 +390,13 @@ export function SimulaPagamento() {
             </div>
           </div>
 
+          {/* Indicador de segurança */}
           <div className={styles.infoSeguranca}>
             <div className={styles.iconeSeguranca}>🔒</div>
             <span>Pagamento 100% seguro</span>
           </div>
 
+          {/* Botões de ação */}
           <div className={styles.botoes}>
             <button
               type="button"
@@ -353,6 +425,7 @@ export function SimulaPagamento() {
         </form>
       </div>
 
+      {/* Componente de mensagem para feedback */}
       {mensagem && (
         <MessageBox 
           message={mensagem} 

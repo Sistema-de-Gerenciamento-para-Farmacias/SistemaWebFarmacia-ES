@@ -1,4 +1,5 @@
 // front/src/pages/Pessoas/Clientes/ListaClientes/ListaClientes.jsx
+
 import { useState, useContext, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ListaClientes.module.css";
@@ -9,17 +10,43 @@ import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 import { AuthContext } from "../../../../context/AuthContext";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para listagem e gerenciamento de clientes
+ * @component
+ * @returns {JSX.Element} Lista de clientes com ações de gerenciamento
+ */
 function ListaClientes() {
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para lista de clientes
   const [clientes, setClientes] = useState([]);
+  
+  // Estado para termo de busca
   const [busca, setBusca] = useState("");
+  
+  // Estado para ID do cliente a ser confirmado para exclusão
   const [confirmId, setConfirmId] = useState(null);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar exclusão em andamento
   const [deletingId, setDeletingId] = useState(null);
 
+  /**
+   * Efeito para carregar lista de clientes quando componente é montado
+   * Executa sempre que o token muda
+   */
   useEffect(() => {
     if (token) {
       carregarClientes();
@@ -29,11 +56,16 @@ function ListaClientes() {
     }
   }, [token]);
 
+  /**
+   * Carrega lista de clientes do backend
+   * @async
+   */
   const carregarClientes = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/pessoa/all', {
+      // Requisição GET para obter todas as pessoas
+      const response = await fetch(`${API_URL}/pessoa/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -41,18 +73,14 @@ function ListaClientes() {
         }
       });
 
-      console.log('📥 Resposta do backend - Clientes:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Dados recebidos do backend:', data);
         
-        // ✅ MUDANÇA: Mostrar TODOS os clientes (ativos e inativos)
+        // Filtra apenas clientes (USER) - ativos e inativos
         const todosClientes = data.filter(pessoa => pessoa.tipoUsuario === 'USER');
         
-        console.log('✅ Todos os clientes:', todosClientes);
         setClientes(todosClientes);
-        console.log(`✅ ${todosClientes.length} clientes carregados (ativos + inativos)`);
       } else if (response.status === 401) {
         setMessage("ERRO: Não autorizado. Token inválido ou expirado.");
         logout();
@@ -70,19 +98,24 @@ function ListaClientes() {
     }
   };
 
+  /**
+   * Exclui (inativa) um cliente
+   * @async
+   * @param {number|string} id - ID do cliente a ser excluído
+   */
   const excluirCliente = async (id) => {
     try {
       setDeletingId(id);
       
-      console.log('🗑️ Tentando excluir cliente ID:', id, 'Tipo:', typeof id);
-      
+      // Converte ID para número
       const idNumerico = Number(id);
       if (isNaN(idNumerico)) {
         setMessage("ERRO: ID do cliente inválido");
         return;
       }
 
-      const response = await fetch(`http://localhost:8080/pessoa/delete/${idNumerico}`, {
+      // Requisição DELETE para marcar cliente como inativo
+      const response = await fetch(`${API_URL}/pessoa/delete/${idNumerico}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -90,12 +123,11 @@ function ListaClientes() {
         }
       });
 
-      console.log('📤 Resposta da exclusão:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Cliente marcado como inativo!");
         
-        // ✅ MUDANÇA: Recarregar a lista completa do backend
+        // Recarrega lista após exclusão
         setTimeout(() => {
           carregarClientes();
         }, 500);
@@ -117,7 +149,11 @@ function ListaClientes() {
     }
   };
 
-  // Formata CPF para exibição: 12345678901 -> 123.456.789-01
+  /**
+   * Formata CPF para exibição: 12345678901 -> 123.456.789-01
+   * @param {string} cpf - CPF sem formatação
+   * @returns {string} CPF formatado
+   */
   const formatCpf = (cpf) => {
     if (!cpf) return 'N/A';
     const d = cpf.replace(/\D/g, "");
@@ -125,11 +161,19 @@ function ListaClientes() {
     return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
   };
 
-  // ✅ NOVA FUNÇÃO: Verificar se cliente está ativo
+  /**
+   * Verifica se um cliente está ativo
+   * @param {Object} cliente - Objeto do cliente
+   * @returns {boolean} true se cliente está ativo
+   */
   const estaAtivo = (cliente) => {
     return !cliente.dataExclusao;
   };
 
+  /**
+   * Filtra clientes com base no termo de busca
+   * Utiliza useMemo para otimizar performance
+   */
   const filtrados = useMemo(() => {
     if (!busca.trim()) return clientes;
     
@@ -143,12 +187,18 @@ function ListaClientes() {
     );
   }, [clientes, busca]);
 
+  /**
+   * Função para recarregar lista de clientes
+   */
   const recarregarClientes = () => {
     carregarClientes();
   };
 
+  /**
+   * Navega para página de edição de um cliente
+   * @param {number|string} id - ID do cliente a ser editado
+   */
   const handleEditar = (id) => {
-    console.log('🔄 Tentando editar cliente ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -158,9 +208,11 @@ function ListaClientes() {
     navigate(`/editarCliente/${idNumerico}`);
   };
 
+  /**
+   * Navega para página de detalhes de um cliente
+   * @param {number|string} id - ID do cliente
+   */
   const handleDetalhes = (id) => {
-    console.log('👁️ Tentando ver detalhes do cliente ID:', id, 'Tipo:', typeof id);
-    
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
       setMessage("ERRO: ID do cliente inválido");
@@ -169,10 +221,14 @@ function ListaClientes() {
     navigate(`/detalhesCliente/${idNumerico}`);
   };
 
+  /**
+   * Renderiza a página de lista de clientes
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
 
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Lista de Clientes</h2>
         <div className={styles.headerActions}>
@@ -190,6 +246,7 @@ function ListaClientes() {
         </div>
       </div>
 
+      {/* Barra superior com busca */}
       <div className={styles.topBar}>
         <div className={styles.searchGroup}>
           <input
@@ -201,9 +258,11 @@ function ListaClientes() {
           />
         </div>
         
+        {/* Espaço reservado para alinhamento (sem botão de cadastro) */}
         <div></div>
       </div>
 
+      {/* Conteúdo principal: carregando ou tabela */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <Loading />
@@ -211,6 +270,7 @@ function ListaClientes() {
         </div>
       ) : (
         <>
+          {/* Barra de informações */}
           <div className={styles.infoBar}>
             <span className={styles.totalClientes}>
               Total: {filtrados.length} cliente{filtrados.length !== 1 ? 's' : ''}
@@ -222,6 +282,7 @@ function ListaClientes() {
             </span>
           </div>
 
+          {/* Tabela de clientes */}
           <table className={styles.table}>
             <thead>
               <tr>
@@ -232,6 +293,7 @@ function ListaClientes() {
               </tr>
             </thead>
             <tbody>
+              {/* Linhas para cada cliente */}
               {filtrados.map((cliente) => (
                 <tr key={cliente.id} className={!estaAtivo(cliente) ? styles.inativo : ''}>
                   <td className={styles.nomeCliente}>
@@ -244,6 +306,7 @@ function ListaClientes() {
                     </span>
                   </td>
                   <td className={styles.actionsCell}>
+                    {/* Botão Editar */}
                     <button
                       className={styles.editButton}
                       onClick={() => handleEditar(cliente.id)}
@@ -252,6 +315,7 @@ function ListaClientes() {
                     >
                       Editar
                     </button>
+                    {/* Botão Inativar */}
                     <button
                       className={styles.deleteButton}
                       onClick={() => setConfirmId(cliente.id)}
@@ -260,6 +324,7 @@ function ListaClientes() {
                     >
                       {estaAtivo(cliente) ? "Inativar" : "Inativo"}
                     </button>
+                    {/* Botão Detalhes */}
                     <button
                       className={styles.detailsButton}
                       onClick={() => handleDetalhes(cliente.id)}
@@ -270,6 +335,8 @@ function ListaClientes() {
                   </td>
                 </tr>
               ))}
+              
+              {/* Mensagem para lista vazia */}
               {filtrados.length === 0 && (
                 <tr>
                   <td colSpan={4} className={styles.empty}>
@@ -282,6 +349,7 @@ function ListaClientes() {
         </>
       )}
 
+      {/* Modal de confirmação para exclusão */}
       {confirmId && (
         <ConfirmModal
           message="Deseja realmente marcar este cliente como inativo? Ele não aparecerá mais nas operações ativas."
@@ -290,6 +358,7 @@ function ListaClientes() {
         />
       )}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

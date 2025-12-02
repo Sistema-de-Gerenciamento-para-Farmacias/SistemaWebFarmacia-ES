@@ -1,4 +1,5 @@
 // HomeCliente.jsx
+
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
@@ -7,19 +8,40 @@ import NavBarCliente from "../../components/NavBarCliente/NavBarCliente";
 import Loading from "../../components/Loading/Loading";
 import MessageBox from "../../components/MessageBox/MessageBox";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente da página inicial do cliente
+ * @component
+ * @returns {JSX.Element} Página home do cliente com produtos destacados
+ */
 function HomeCliente() {
+  // Obtém token e função de logout do contexto de autenticação
   const { token, logout } = useContext(AuthContext);
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
 
+  // Estado para armazenar lista de produtos
   const [produtos, setProdutos] = useState([]);
+  
+  // Estado para controlar carregamento de dados
   const [loading, setLoading] = useState(true);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
 
-  // Carrossel state
+  // Estado para controle do carrossel de produtos
   const [start, setStart] = useState(0);
-  const CARD_STEP = 235; // 220 (card) + 15 (gap)
+  
+  // Constante para calcular deslocamento do carrossel
+  const CARD_STEP = 235; // 220px (largura do card) + 15px (gap)
 
-  // Buscar produtos do backend
+  /**
+   * Efeito para buscar produtos do backend quando o componente é montado
+   * Executa sempre que o token de autenticação muda
+   */
   useEffect(() => {
     if (token) {
       carregarProdutos();
@@ -29,11 +51,17 @@ function HomeCliente() {
     }
   }, [token]);
 
+  /**
+   * Carrega produtos do backend
+   * @async
+   * @description Busca todos os produtos ativos da API
+   */
   const carregarProdutos = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/produto/all', {
+      // Requisição GET para obter todos os produtos
+      const response = await fetch(`${API_URL}/produto/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -41,11 +69,15 @@ function HomeCliente() {
         }
       });
 
+      // Se a resposta for bem sucedida
       if (response.ok) {
         const data = await response.json();
+        
+        // Filtra apenas produtos ativos (sem data de exclusão)
         const produtosAtivos = data.filter(produto => !produto.dataExclusao);
         setProdutos(produtosAtivos);
       } else {
+        // Tenta obter mensagem de erro do backend
         const errorData = await response.json();
         setMessage(`ERRO: ${errorData.message || 'Falha ao carregar produtos'}`);
       }
@@ -57,19 +89,36 @@ function HomeCliente() {
     }
   };
 
-  // Carrossel automático
+  /**
+   * Efeito para controle do carrossel automático
+   * Avança automaticamente a cada 4.5 segundos
+   */
   useEffect(() => {
     if (produtos.length > 0) {
       const interval = setInterval(() => {
         setStart((prev) => (prev + 1) % Math.min(produtos.length, 8));
       }, 4500);
+      
+      // Limpa o intervalo quando o componente é desmontado
       return () => clearInterval(interval);
     }
   }, [produtos]);
 
+  /**
+   * Navega para o slide anterior do carrossel
+   */
   const prev = () => setStart((start - 1 + Math.min(produtos.length, 8)) % Math.min(produtos.length, 8));
+  
+  /**
+   * Navega para o próximo slide do carrossel
+   */
   const next = () => setStart((start + 1) % Math.min(produtos.length, 8));
 
+  /**
+   * Formata preço para o padrão brasileiro (R$)
+   * @param {number} preco - Preço a ser formatado
+   * @returns {string} Preço formatado (ex: "R$ 29,99")
+   */
   const formatarPreco = (preco) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -77,10 +126,15 @@ function HomeCliente() {
     }).format(preco);
   };
 
-  const produtosDestaque = produtos.slice(0, 8);
-  const produtosRecentes = produtos.slice(0, 6);
-  const produtosPopulares = produtos.slice(0, 4);
+  // Divide produtos em seções diferentes para a página
+  const produtosDestaque = produtos.slice(0, 8);     // Para o carrossel
+  const produtosRecentes = produtos.slice(0, 6);     // Para grid de recentes
+  const produtosPopulares = produtos.slice(0, 4);    // Para seção de populares
 
+  /**
+   * Renderiza estado de carregamento
+   * Mostra componente Loading enquanto produtos são carregados
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -93,11 +147,15 @@ function HomeCliente() {
     );
   }
 
+  /**
+   * Renderiza a página home do cliente
+   * Estrutura com hero section, carrossel, grids e seções informativas
+   */
   return (
     <div className={styles.container}>
       <NavBarCliente />
 
-      {/* Hero Section */}
+      {/* Hero Section - Introdução e mensagem principal */}
       <div className={styles.heroSection}>
         <h1 className={styles.mainTitle}>💊 Farmácia Digital</h1>
         <h3 className={styles.subTitle}>Cuidando da sua saúde com praticidade e confiança</h3>
@@ -107,7 +165,7 @@ function HomeCliente() {
         </p>
       </div>
 
-      {/* Ofertas do Dia */}
+      {/* Seção de Ofertas do Dia com carrossel */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.title}>🔥 Ofertas do Dia</h2>
@@ -116,15 +174,18 @@ function HomeCliente() {
 
         {produtosDestaque.length > 0 ? (
           <div className={styles.carousel}>
+            {/* Botão para slide anterior */}
             <button className={styles.arrow} onClick={prev}>
               <span className={styles.seta}>&#x276E;</span>
             </button>
 
+            {/* Container do carrossel */}
             <div className={styles.cardsWrapper}>
               <div
                 className={styles.cards}
                 style={{ transform: `translateX(-${start * CARD_STEP}px)` }}
               >
+                {/* Duplica array para criar efeito de carrossel infinito */}
                 {produtosDestaque.concat(produtosDestaque).map((produto, idx) => (
                   <div
                     key={`${produto.idProduto}-${idx}`}
@@ -155,6 +216,7 @@ function HomeCliente() {
               </div>
             </div>
 
+            {/* Botão para próximo slide */}
             <button className={styles.arrow} onClick={next}>
               <span className={styles.seta}>&#x276F;</span>
             </button>
@@ -166,7 +228,7 @@ function HomeCliente() {
         )}
       </section>
 
-      {/* Produtos Recentes */}
+      {/* Seção de Produtos Recentes em grid */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.title}>🆕 Produtos Recentes</h2>
@@ -195,7 +257,7 @@ function HomeCliente() {
         </div>
       </section>
 
-      {/* Destaques */}
+      {/* Seção de Produtos Mais Populares */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.title}>⭐ Mais Populares</h2>
@@ -225,7 +287,7 @@ function HomeCliente() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Seção de Call to Action para catálogo completo */}
       <section className={styles.ctaSection}>
         <div className={styles.ctaContent}>
           <h3>🚀 Precisa de algo específico?</h3>
@@ -239,7 +301,7 @@ function HomeCliente() {
         </div>
       </section>
 
-      {/* Benefícios */}
+      {/* Seção de Benefícios da farmácia */}
       <section className={styles.benefitsSection}>
         <h3>🎯 Por que escolher nossa farmácia?</h3>
         <div className={styles.benefitsGrid}>
@@ -266,6 +328,7 @@ function HomeCliente() {
         </div>
       </section>
 
+      {/* Componente de mensagem para feedback ao usuário */}
       {message && (
         <MessageBox 
           message={message} 

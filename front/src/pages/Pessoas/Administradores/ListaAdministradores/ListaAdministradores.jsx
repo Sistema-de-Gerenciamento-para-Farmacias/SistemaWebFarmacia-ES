@@ -1,3 +1,5 @@
+// front/src/pages/Pessoas/Administradores/ListaAdministradores/ListaAdministradores.jsx
+
 import { useState, useContext, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ListaAdministradores.module.css";
@@ -8,17 +10,43 @@ import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 import { AuthContext } from "../../../../context/AuthContext";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para listagem e gerenciamento de administradores
+ * @component
+ * @returns {JSX.Element} Lista de administradores com ações de gerenciamento
+ */
 function ListaAdministradores() {
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para lista de administradores
   const [administradores, setAdministradores] = useState([]);
+  
+  // Estado para termo de busca
   const [busca, setBusca] = useState("");
+  
+  // Estado para ID do administrador a ser confirmado para exclusão
   const [confirmId, setConfirmId] = useState(null);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar exclusão em andamento
   const [deletingId, setDeletingId] = useState(null);
 
+  /**
+   * Efeito para carregar lista de administradores quando componente é montado
+   * Executa sempre que o token muda
+   */
   useEffect(() => {
     if (token) {
       carregarAdministradores();
@@ -28,11 +56,16 @@ function ListaAdministradores() {
     }
   }, [token]);
 
+  /**
+   * Carrega lista de administradores do backend
+   * @async
+   */
   const carregarAdministradores = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/pessoa/all', {
+      // Requisição GET para obter todas as pessoas
+      const response = await fetch(`${API_URL}/pessoa/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -40,18 +73,13 @@ function ListaAdministradores() {
         }
       });
 
-      console.log('📥 Resposta do backend - Administradores:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Dados recebidos do backend:', data);
         
-        // ✅ MUDANÇA: Mostrar TODOS os administradores (ativos e inativos)
+        // Filtra apenas administradores (ativos e inativos)
         const todosAdministradores = data.filter(pessoa => pessoa.tipoUsuario === 'ADMIN');
-        
-        console.log('✅ Todos os administradores:', todosAdministradores);
         setAdministradores(todosAdministradores);
-        console.log(`✅ ${todosAdministradores.length} administradores carregados (ativos + inativos)`);
       } else if (response.status === 401) {
         setMessage("ERRO: Não autorizado. Token inválido ou expirado.");
         logout();
@@ -69,19 +97,24 @@ function ListaAdministradores() {
     }
   };
 
+  /**
+   * Exclui (inativa) um administrador
+   * @async
+   * @param {number|string} id - ID do administrador a ser excluído
+   */
   const excluirAdministrador = async (id) => {
     try {
       setDeletingId(id);
       
-      console.log('🗑️ Tentando excluir administrador ID:', id, 'Tipo:', typeof id);
-      
+      // Converte ID para número
       const idNumerico = Number(id);
       if (isNaN(idNumerico)) {
         setMessage("ERRO: ID do administrador inválido");
         return;
       }
 
-      const response = await fetch(`http://localhost:8080/pessoa/delete/${idNumerico}`, {
+      // Requisição DELETE para marcar administrador como inativo
+      const response = await fetch(`${API_URL}/pessoa/delete/${idNumerico}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -89,12 +122,11 @@ function ListaAdministradores() {
         }
       });
 
-      console.log('📤 Resposta da exclusão:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Administrador marcado como inativo!");
         
-        // ✅ MUDANÇA: Recarregar a lista completa do backend
+        // Recarrega lista após exclusão
         setTimeout(() => {
           carregarAdministradores();
         }, 500);
@@ -116,7 +148,11 @@ function ListaAdministradores() {
     }
   };
 
-  // Formata CPF para exibição: 12345678901 -> 123.456.789-01
+  /**
+   * Formata CPF para exibição: 12345678901 -> 123.456.789-01
+   * @param {string} cpf - CPF sem formatação
+   * @returns {string} CPF formatado
+   */
   const formatCpf = (cpf) => {
     if (!cpf) return 'N/A';
     const d = cpf.replace(/\D/g, "");
@@ -124,11 +160,19 @@ function ListaAdministradores() {
     return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
   };
 
-  // ✅ NOVA FUNÇÃO: Verificar se administrador está ativo
+  /**
+   * Verifica se um administrador está ativo
+   * @param {Object} admin - Objeto do administrador
+   * @returns {boolean} true se administrador está ativo
+   */
   const estaAtivo = (admin) => {
     return !admin.dataExclusao;
   };
 
+  /**
+   * Filtra administradores com base no termo de busca
+   * Utiliza useMemo para otimizar performance
+   */
   const filtrados = useMemo(() => {
     if (!busca.trim()) return administradores;
     
@@ -142,12 +186,18 @@ function ListaAdministradores() {
     );
   }, [administradores, busca]);
 
+  /**
+   * Função para recarregar lista de administradores
+   */
   const recarregarAdministradores = () => {
     carregarAdministradores();
   };
 
+  /**
+   * Navega para página de edição de um administrador
+   * @param {number|string} id - ID do administrador a ser editado
+   */
   const handleEditar = (id) => {
-    console.log('🔄 Tentando editar administrador ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -157,8 +207,11 @@ function ListaAdministradores() {
     navigate(`/editarAdministrador/${idNumerico}`);
   };
 
+  /**
+   * Navega para página de detalhes de um administrador
+   * @param {number|string} id - ID do administrador
+   */
   const handleDetalhes = (id) => {
-    console.log('👁️ Tentando ver detalhes do administrador ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -168,10 +221,14 @@ function ListaAdministradores() {
     navigate(`/detalhesAdministrador/${idNumerico}`);
   };
 
+  /**
+   * Renderiza a página de lista de administradores
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
 
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Lista de Administradores</h2>
         <div className={styles.headerActions}>
@@ -189,6 +246,7 @@ function ListaAdministradores() {
         </div>
       </div>
 
+      {/* Barra superior com busca e botão de cadastro */}
       <div className={styles.topBar}>
         <div className={styles.searchGroup}>
           <input
@@ -209,6 +267,7 @@ function ListaAdministradores() {
         </button>
       </div>
 
+      {/* Conteúdo principal: carregando ou tabela */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <Loading />
@@ -216,6 +275,7 @@ function ListaAdministradores() {
         </div>
       ) : (
         <>
+          {/* Barra de informações */}
           <div className={styles.infoBar}>
             <span className={styles.totalAdministradores}>
               Total: {filtrados.length} administrador{filtrados.length !== 1 ? 'es' : ''}
@@ -227,6 +287,7 @@ function ListaAdministradores() {
             </span>
           </div>
 
+          {/* Tabela de administradores */}
           <table className={styles.table}>
             <thead>
               <tr>
@@ -237,6 +298,7 @@ function ListaAdministradores() {
               </tr>
             </thead>
             <tbody>
+              {/* Linhas para cada administrador */}
               {filtrados.map((admin) => (
                 <tr key={admin.id} className={!estaAtivo(admin) ? styles.inativo : ''}>
                   <td className={styles.nomeAdmin}>
@@ -249,6 +311,7 @@ function ListaAdministradores() {
                     </span>
                   </td>
                   <td className={styles.actionsCell}>
+                    {/* Botão Editar */}
                     <button
                       className={styles.editButton}
                       onClick={() => handleEditar(admin.id)}
@@ -257,6 +320,7 @@ function ListaAdministradores() {
                     >
                       Editar
                     </button>
+                    {/* Botão Inativar */}
                     <button
                       className={styles.deleteButton}
                       onClick={() => setConfirmId(admin.id)}
@@ -265,6 +329,7 @@ function ListaAdministradores() {
                     >
                       {estaAtivo(admin) ? "Inativar" : "Inativo"}
                     </button>
+                    {/* Botão Detalhes */}
                     <button
                       className={styles.detailsButton}
                       onClick={() => handleDetalhes(admin.id)}
@@ -275,6 +340,8 @@ function ListaAdministradores() {
                   </td>
                 </tr>
               ))}
+              
+              {/* Mensagem para lista vazia */}
               {filtrados.length === 0 && (
                 <tr>
                   <td colSpan={4} className={styles.empty}>
@@ -295,6 +362,7 @@ function ListaAdministradores() {
         </>
       )}
 
+      {/* Modal de confirmação para exclusão */}
       {confirmId && (
         <ConfirmModal
           message="Deseja realmente marcar este administrador como inativo? Ele não poderá mais fazer login no sistema."
@@ -303,6 +371,7 @@ function ListaAdministradores() {
         />
       )}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

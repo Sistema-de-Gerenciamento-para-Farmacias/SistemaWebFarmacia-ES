@@ -1,3 +1,5 @@
+// front/src/pages/Pessoas/Funcionarios/EditarFuncionario/EditarFuncionario.jsx
+
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./EditarFuncionario.module.css";
@@ -7,16 +9,39 @@ import { AuthContext } from "../../../../context/AuthContext";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para edição de funcionários existentes
+ * @component
+ * @returns {JSX.Element} Formulário de edição de funcionário
+ */
 function EditarFuncionario() {
+  // Obtém ID do funcionário da URL
   const { id } = useParams();
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para dados do funcionário
   const [funcionario, setFuncionario] = useState(null);
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar salvamento de alterações
   const [saving, setSaving] = useState(false);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
 
+  /**
+   * Efeito para carregar dados do funcionário quando componente é montado
+   */
   useEffect(() => {
     if (token && id) {
       carregarFuncionario();
@@ -26,11 +51,16 @@ function EditarFuncionario() {
     }
   }, [token, id]);
 
+  /**
+   * Carrega dados do funcionário do backend
+   * @async
+   */
   const carregarFuncionario = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:8080/pessoa/${id}`, {
+      // Requisição GET para obter dados do funcionário
+      const response = await fetch(`${API_URL}/pessoa/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -38,8 +68,11 @@ function EditarFuncionario() {
         }
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         const funcionarioData = await response.json();
+        
+        // Normaliza dados para uso interno
         setFuncionario({
           ...funcionarioData,
           id: funcionarioData.idPessoa
@@ -58,6 +91,10 @@ function EditarFuncionario() {
     }
   };
 
+  /**
+   * Atualiza estado do funcionário quando campos são alterados
+   * @param {Event} e - Evento de mudança do input
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFuncionario(prev => ({
@@ -66,9 +103,14 @@ function EditarFuncionario() {
     }));
   };
 
+  /**
+   * Valida todos os campos do formulário antes do envio
+   * @returns {boolean} true se todos os campos são válidos
+   */
   const validarFormulario = () => {
     const { nome, cpf, email } = funcionario;
 
+    // Validações de campos obrigatórios
     if (!nome?.trim()) {
       setMessage("ERRO: Nome é obrigatório");
       return false;
@@ -84,6 +126,7 @@ function EditarFuncionario() {
       return false;
     }
 
+    // Valida formato do email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setMessage("ERRO: Email inválido");
@@ -93,23 +136,30 @@ function EditarFuncionario() {
     return true;
   };
 
+  /**
+   * Salva alterações do funcionário no backend
+   * @async
+   */
   const salvarFuncionario = async () => {
+    // Valida formulário antes de enviar
     if (!validarFormulario()) return;
 
     setSaving(true);
     setMessage("");
 
     try {
+      // Prepara dados para envio ao backend
       const dadosParaEnviar = {
         nome: funcionario.nome.trim(),
         cpf: funcionario.cpf.trim(),
         telefone: funcionario.telefone?.trim() || "",
         email: funcionario.email.trim(),
-        senha: funcionario.senha || "",
-        tipoUsuario: "EMPLOY"
+        senha: funcionario.senha || "", // Senha vazia mantém a atual
+        tipoUsuario: "EMPLOY" // Tipo fixo para funcionário
       };
 
-      const response = await fetch(`http://localhost:8080/pessoa/update/${id}`, {
+      // Requisição PUT para atualizar funcionário
+      const response = await fetch(`${API_URL}/pessoa/update/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -118,14 +168,17 @@ function EditarFuncionario() {
         body: JSON.stringify(dadosParaEnviar)
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Funcionário atualizado com sucesso! Redirecionando...");
         
+        // Redireciona para lista após 2 segundos
         setTimeout(() => {
           navigate("/listaFuncionarios");
         }, 2000);
         
       } else {
+        // Tenta obter mensagem de erro específica
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
         
         try {
@@ -134,7 +187,7 @@ function EditarFuncionario() {
             errorMessage = errorData.message;
           }
         } catch {
-          // Ignora erro de parse
+          // Ignora erro de parse JSON
         }
         
         setMessage(`ERRO: ${errorMessage}`);
@@ -148,6 +201,9 @@ function EditarFuncionario() {
     }
   };
 
+  /**
+   * Renderiza estado de carregamento
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -160,6 +216,9 @@ function EditarFuncionario() {
     );
   }
 
+  /**
+   * Renderiza estado de funcionário não encontrado
+   */
   if (!funcionario) {
     return (
       <div className={styles.container}>
@@ -177,16 +236,23 @@ function EditarFuncionario() {
     );
   }
 
+  /**
+   * Renderiza formulário de edição
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
+      
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Editar Funcionário</h2>
         <button className={styles.logoutTop} onClick={logout}>Logout</button>
       </div>
 
+      {/* Container principal do formulário */}
       <div className={styles.formWrapper}>
         <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+          {/* Campo: Nome */}
           <label className={styles.label}>Nome *</label>
           <input 
             className={styles.input} 
@@ -197,6 +263,7 @@ function EditarFuncionario() {
             required
           />
 
+          {/* Campo: CPF */}
           <label className={styles.label}>CPF *</label>
           <input 
             className={styles.input} 
@@ -207,6 +274,7 @@ function EditarFuncionario() {
             required
           />
 
+          {/* Campo: Email */}
           <label className={styles.label}>Email *</label>
           <input 
             className={styles.input} 
@@ -218,6 +286,7 @@ function EditarFuncionario() {
             required
           />
 
+          {/* Campo: Telefone (opcional) */}
           <label className={styles.label}>Telefone</label>
           <input 
             className={styles.input} 
@@ -227,6 +296,7 @@ function EditarFuncionario() {
             placeholder="(00) 00000-0000"
           />
 
+          {/* Campo: Senha (opcional - manter atual) */}
           <label className={styles.label}>Senha</label>
           <input 
             className={styles.input} 
@@ -237,6 +307,7 @@ function EditarFuncionario() {
             placeholder="Deixe em branco para manter a senha atual"
           />
 
+          {/* Botões de ação do formulário */}
           <div className={styles.actions}>
             <button 
               type="button" 
@@ -258,8 +329,10 @@ function EditarFuncionario() {
         </form>
       </div>
 
+      {/* Componente de loading durante salvamento */}
       {saving && <Loading />}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

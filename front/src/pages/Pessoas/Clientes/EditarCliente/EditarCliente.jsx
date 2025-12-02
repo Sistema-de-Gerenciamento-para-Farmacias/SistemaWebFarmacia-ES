@@ -1,3 +1,5 @@
+// front/src/pages/Pessoas/Clientes/EditarCliente/EditarCliente.jsx
+
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./EditarCliente.module.css";
@@ -7,16 +9,39 @@ import { AuthContext } from "../../../../context/AuthContext";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para edição de clientes existentes
+ * @component
+ * @returns {JSX.Element} Formulário de edição de cliente
+ */
 function EditarCliente() {
+  // Obtém ID do cliente da URL
   const { id } = useParams();
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para dados do cliente
   const [cliente, setCliente] = useState(null);
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar salvamento de alterações
   const [saving, setSaving] = useState(false);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
 
+  /**
+   * Efeito para carregar dados do cliente quando componente é montado
+   */
   useEffect(() => {
     if (token && id) {
       carregarCliente();
@@ -26,11 +51,16 @@ function EditarCliente() {
     }
   }, [token, id]);
 
+  /**
+   * Carrega dados do cliente do backend
+   * @async
+   */
   const carregarCliente = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:8080/pessoa/${id}`, {
+      // Requisição GET para obter dados do cliente
+      const response = await fetch(`${API_URL}/pessoa/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -38,12 +68,13 @@ function EditarCliente() {
         }
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         const clienteData = await response.json();
-        // CORREÇÃO: Adicionar campo id baseado no idPessoa
+        
         setCliente({
           ...clienteData,
-          id: clienteData.idPessoa  // ← CORREÇÃO AQUI
+          id: clienteData.idPessoa
         });
       } else if (response.status === 404) {
         setMessage("ERRO: Cliente não encontrado.");
@@ -59,6 +90,10 @@ function EditarCliente() {
     }
   };
 
+  /**
+   * Atualiza estado do cliente quando campos são alterados
+   * @param {Event} e - Evento de mudança do input
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCliente(prev => ({
@@ -67,9 +102,14 @@ function EditarCliente() {
     }));
   };
 
+  /**
+   * Valida todos os campos do formulário antes do envio
+   * @returns {boolean} true se todos os campos são válidos
+   */
   const validarFormulario = () => {
     const { nome, cpf, email } = cliente;
 
+    // Validações de campos obrigatórios
     if (!nome?.trim()) {
       setMessage("ERRO: Nome é obrigatório");
       return false;
@@ -85,7 +125,7 @@ function EditarCliente() {
       return false;
     }
 
-    // Validação básica de email
+    // Valida formato do email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setMessage("ERRO: Email inválido");
@@ -95,23 +135,30 @@ function EditarCliente() {
     return true;
   };
 
+  /**
+   * Salva alterações do cliente no backend
+   * @async
+   */
   const salvarCliente = async () => {
+    // Valida formulário antes de enviar
     if (!validarFormulario()) return;
 
     setSaving(true);
     setMessage("");
 
     try {
+      // Prepara dados para envio ao backend
       const dadosParaEnviar = {
         nome: cliente.nome.trim(),
         cpf: cliente.cpf.trim(),
         telefone: cliente.telefone?.trim() || "",
         email: cliente.email.trim(),
         senha: cliente.senha || "", // Mantém a senha atual se não for alterada
-        tipoUsuario: cliente.tipoUsuario || "USER"
+        tipoUsuario: cliente.tipoUsuario || "USER" // Mantém tipo original ou usa USER
       };
 
-      const response = await fetch(`http://localhost:8080/pessoa/update/${id}`, {
+      // Requisição PUT para atualizar cliente
+      const response = await fetch(`${API_URL}/pessoa/update/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -120,14 +167,17 @@ function EditarCliente() {
         body: JSON.stringify(dadosParaEnviar)
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Cliente atualizado com sucesso! Redirecionando...");
         
+        // Redireciona para lista após 2 segundos
         setTimeout(() => {
           navigate("/listaClientes");
         }, 2000);
         
       } else {
+        // Tenta obter mensagem de erro específica
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
         
         try {
@@ -136,7 +186,7 @@ function EditarCliente() {
             errorMessage = errorData.message;
           }
         } catch {
-          // Ignora erro de parse
+          // Ignora erro de parse JSON
         }
         
         setMessage(`ERRO: ${errorMessage}`);
@@ -150,6 +200,9 @@ function EditarCliente() {
     }
   };
 
+  /**
+   * Renderiza estado de carregamento
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -162,6 +215,9 @@ function EditarCliente() {
     );
   }
 
+  /**
+   * Renderiza estado de cliente não encontrado
+   */
   if (!cliente) {
     return (
       <div className={styles.container}>
@@ -179,16 +235,23 @@ function EditarCliente() {
     );
   }
 
+  /**
+   * Renderiza formulário de edição
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
+      
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Editar Cliente</h2>
         <button className={styles.logoutTop} onClick={logout}>Logout</button>
       </div>
 
+      {/* Container principal do formulário */}
       <div className={styles.formWrapper}>
         <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+          {/* Campo: Nome */}
           <label className={styles.label}>Nome *</label>
           <input 
             className={styles.input} 
@@ -199,6 +262,7 @@ function EditarCliente() {
             required
           />
 
+          {/* Campo: CPF */}
           <label className={styles.label}>CPF *</label>
           <input 
             className={styles.input} 
@@ -209,6 +273,7 @@ function EditarCliente() {
             required
           />
 
+          {/* Campo: Email */}
           <label className={styles.label}>Email *</label>
           <input 
             className={styles.input} 
@@ -220,6 +285,7 @@ function EditarCliente() {
             required
           />
 
+          {/* Campo: Telefone (opcional) */}
           <label className={styles.label}>Telefone</label>
           <input 
             className={styles.input} 
@@ -229,6 +295,7 @@ function EditarCliente() {
             placeholder="(00) 00000-0000"
           />
 
+          {/* Botões de ação do formulário */}
           <div className={styles.actions}>
             <button 
               type="button" 
@@ -250,8 +317,10 @@ function EditarCliente() {
         </form>
       </div>
 
+      {/* Componente de loading durante salvamento */}
       {saving && <Loading />}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

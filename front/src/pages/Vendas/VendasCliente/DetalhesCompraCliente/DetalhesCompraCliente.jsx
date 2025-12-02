@@ -1,3 +1,5 @@
+// front/src/pages/Cliente/DetalhesCompraCliente/DetalhesCompraCliente.jsx
+
 import { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../../context/AuthContext";
@@ -6,29 +8,56 @@ import Loading from "../../../../components/Loading/Loading";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import styles from "./DetalhesCompraCliente.module.css";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para exibir detalhes de uma compra específica do cliente
+ * @component
+ * @returns {JSX.Element} Página de detalhes da compra
+ */
 export function DetalhesCompraCliente() {
+  // Obtém ID da compra da URL
   const { id } = useParams();
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token do contexto de autenticação
   const { token } = useContext(AuthContext);
   
+  // Estado para armazenar dados da compra
   const [compra, setCompra] = useState(null);
+  
+  // Estado para controlar carregamento de dados
   const [loading, setLoading] = useState(true);
+  
+  // Estado para mensagens de feedback
   const [mensagem, setMensagem] = useState("");
 
+  /**
+   * Efeito para carregar detalhes da compra quando componente é montado
+   * Executa sempre que token ou ID da compra mudam
+   */
   useEffect(() => {
     if (token && id) {
       carregarDetalhesCompra();
     } else {
-      setMensagem("❌ Token de autenticação não encontrado.");
+      setMensagem("Token de autenticação não encontrado.");
       setLoading(false);
     }
   }, [token, id]);
 
+  /**
+   * Carrega detalhes da compra do backend
+   * @async
+   */
   const carregarDetalhesCompra = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:8080/venda/${id}`, {
+      // Requisição GET para obter detalhes da compra específica
+      const response = await fetch(`${API_URL}/venda/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -36,23 +65,29 @@ export function DetalhesCompraCliente() {
         }
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         const compraData = await response.json();
         setCompra(compraData);
       } else if (response.status === 404) {
-        setMensagem("❌ Compra não encontrada.");
+        setMensagem("Compra não encontrada.");
       } else {
         const errorData = await response.json();
-        setMensagem(`❌ ${errorData.message || 'Falha ao carregar detalhes da compra'}`);
+        setMensagem(`${errorData.message || 'Falha ao carregar detalhes da compra'}`);
       }
     } catch (error) {
       console.error('Erro ao carregar detalhes da compra:', error);
-      setMensagem("❌ Não foi possível conectar ao servidor.");
+      setMensagem("Não foi possível conectar ao servidor.");
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Formata data para exibição no formato brasileiro
+   * @param {string} dataString - Data em formato string
+   * @returns {string} Data formatada ou mensagem padrão
+   */
   const formatarData = (dataString) => {
     if (!dataString) return 'Data não informada';
     try {
@@ -63,6 +98,11 @@ export function DetalhesCompraCliente() {
     }
   };
 
+  /**
+   * Formata preço para o padrão brasileiro (R$)
+   * @param {number} preco - Preço a ser formatado
+   * @returns {string} Preço formatado (ex: "R$ 29,99")
+   */
   const formatarPreco = (preco) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -70,6 +110,10 @@ export function DetalhesCompraCliente() {
     }).format(preco || 0);
   };
 
+  /**
+   * Calcula o valor total da compra somando todos os itens
+   * @returns {number} Valor total da compra
+   */
   const calcularTotalCompra = () => {
     if (!compra?.itens) return 0;
     return compra.itens.reduce((total, item) => {
@@ -77,6 +121,9 @@ export function DetalhesCompraCliente() {
     }, 0);
   };
 
+  /**
+   * Renderiza estado de carregamento
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -89,6 +136,9 @@ export function DetalhesCompraCliente() {
     );
   }
 
+  /**
+   * Renderiza estado de compra não encontrada
+   */
   if (!compra) {
     return (
       <div className={styles.container}>
@@ -107,17 +157,24 @@ export function DetalhesCompraCliente() {
     );
   }
 
+  // Calcula total da compra para exibição
   const totalCompra = calcularTotalCompra();
 
+  /**
+   * Renderiza página de detalhes da compra
+   */
   return (
     <div className={styles.container}>
+      {/* Botão para voltar à página anterior */}
       <BotaoRetorno />
 
+      {/* Cabeçalho com informações principais */}
       <h1 className={styles.titulo}>
         🧾 Detalhes da Compra #{compra.idVenda}
         {compra.dataExclusao && <span className={styles.badgeCancelada}>Cancelada</span>}
       </h1>
 
+      {/* Seção de informações gerais da compra */}
       <div className={styles.info}>
         <div className={styles.infoItem}>
           <strong>📋 ID da Compra:</strong> #{compra.idVenda}
@@ -142,10 +199,12 @@ export function DetalhesCompraCliente() {
         </div>
       </div>
 
+      {/* Seção de itens da compra */}
       <h3 className={styles.subtitulo}>🛍️ Itens da Compra</h3>
       
       {compra.itens && compra.itens.length > 0 ? (
         <>
+          {/* Tabela de itens da compra */}
           <table className={styles.tabela}>
             <thead>
               <tr>
@@ -173,6 +232,7 @@ export function DetalhesCompraCliente() {
             </tbody>
           </table>
 
+          {/* Resumo financeiro da compra */}
           <div className={styles.resumoTotal}>
             <div className={styles.totalItem}>
               <span>Subtotal:</span>
@@ -194,6 +254,7 @@ export function DetalhesCompraCliente() {
         </div>
       )}
 
+      {/* Componente de mensagem para feedback */}
       {mensagem && (
         <MessageBox 
           message={mensagem} 

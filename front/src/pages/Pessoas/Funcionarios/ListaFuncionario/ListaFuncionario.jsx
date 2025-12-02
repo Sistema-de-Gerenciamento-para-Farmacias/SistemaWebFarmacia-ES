@@ -1,3 +1,5 @@
+// front/src/pages/Pessoas/Funcionarios/ListaFuncionarios/ListaFuncionarios.jsx
+
 import { useState, useContext, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ListaFuncionario.module.css";
@@ -8,17 +10,43 @@ import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 import { AuthContext } from "../../../../context/AuthContext";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para listagem e gerenciamento de funcionários
+ * @component
+ * @returns {JSX.Element} Lista de funcionários com ações de gerenciamento
+ */
 function ListaFuncionarios() {
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto de autenticação
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para armazenar lista de funcionários
   const [funcionarios, setFuncionarios] = useState([]);
+  
+  // Estado para termo de busca
   const [busca, setBusca] = useState("");
+  
+  // Estado para ID do funcionário a ser confirmado para exclusão
   const [confirmId, setConfirmId] = useState(null);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar exclusão em andamento
   const [deletingId, setDeletingId] = useState(null);
 
+  /**
+   * Efeito para carregar lista de funcionários quando componente é montado
+   * Executa sempre que o token de autenticação muda
+   */
   useEffect(() => {
     if (token) {
       carregarFuncionarios();
@@ -28,11 +56,16 @@ function ListaFuncionarios() {
     }
   }, [token]);
 
+  /**
+   * Carrega lista de funcionários do backend
+   * @async
+   */
   const carregarFuncionarios = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:8080/pessoa/all', {
+      // Requisição GET para obter todas as pessoas
+      const response = await fetch(`${API_URL}/pessoa/all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -40,18 +73,13 @@ function ListaFuncionarios() {
         }
       });
 
-      console.log('📥 Resposta do backend - Funcionários:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Dados recebidos do backend:', data);
         
-        // ✅ MUDANÇA: Mostrar TODOS os funcionários (ativos e inativos)
+        // Filtra apenas funcionários (tipo EMPLOY) - inclui ativos e inativos
         const todosFuncionarios = data.filter(pessoa => pessoa.tipoUsuario === 'EMPLOY');
-        
-        console.log('✅ Todos os funcionários:', todosFuncionarios);
         setFuncionarios(todosFuncionarios);
-        console.log(`✅ ${todosFuncionarios.length} funcionários carregados (ativos + inativos)`);
       } else if (response.status === 401) {
         setMessage("ERRO: Não autorizado. Token inválido ou expirado.");
         logout();
@@ -62,26 +90,30 @@ function ListaFuncionarios() {
         setMessage(`ERRO: ${errorData.message || 'Falha ao carregar funcionários'}`);
       }
     } catch (error) {
-      console.error('Erro ao carregar funcionários:', error);
       setMessage("ERRO: Não foi possível conectar ao servidor. Verifique se o backend está rodando.");
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Exclui (inativa) um funcionário
+   * @async
+   * @param {number|string} id - ID do funcionário a ser excluído
+   */
   const excluirFuncionario = async (id) => {
     try {
       setDeletingId(id);
       
-      console.log('🗑️ Tentando excluir funcionário ID:', id, 'Tipo:', typeof id);
-      
+      // Converte ID para número para validação
       const idNumerico = Number(id);
       if (isNaN(idNumerico)) {
         setMessage("ERRO: ID do funcionário inválido");
         return;
       }
 
-      const response = await fetch(`http://localhost:8080/pessoa/delete/${idNumerico}`, {
+      // Requisição DELETE para marcar funcionário como inativo
+      const response = await fetch(`${API_URL}/pessoa/delete/${idNumerico}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -89,12 +121,11 @@ function ListaFuncionarios() {
         }
       });
 
-      console.log('📤 Resposta da exclusão:', response.status);
-
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Funcionário marcado como inativo!");
         
-        // ✅ MUDANÇA: Recarregar a lista completa do backend
+        // Recarrega lista após exclusão (com pequeno delay para melhor UX)
         setTimeout(() => {
           carregarFuncionarios();
         }, 500);
@@ -108,7 +139,6 @@ function ListaFuncionarios() {
         setMessage(`ERRO: ${errorData.message || 'Falha ao excluir funcionário'}`);
       }
     } catch (error) {
-      console.error('Erro ao excluir funcionário:', error);
       setMessage("ERRO: Não foi possível conectar ao servidor");
     } finally {
       setDeletingId(null);
@@ -116,7 +146,11 @@ function ListaFuncionarios() {
     }
   };
 
-  // Formata CPF para exibição: 12345678901 -> 123.456.789-01
+  /**
+   * Formata CPF para exibição: 12345678901 -> 123.456.789-01
+   * @param {string} cpf - CPF sem formatação
+   * @returns {string} CPF formatado ou 'N/A' se inválido
+   */
   const formatCpf = (cpf) => {
     if (!cpf) return 'N/A';
     const d = cpf.replace(/\D/g, "");
@@ -124,11 +158,19 @@ function ListaFuncionarios() {
     return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
   };
 
-  // ✅ NOVA FUNÇÃO: Verificar se funcionário está ativo
+  /**
+   * Verifica se um funcionário está ativo
+   * @param {Object} funcionario - Objeto do funcionário
+   * @returns {boolean} true se funcionário está ativo (sem dataExclusao)
+   */
   const estaAtivo = (funcionario) => {
     return !funcionario.dataExclusao;
   };
 
+  /**
+   * Filtra funcionários com base no termo de busca
+   * Utiliza useMemo para otimizar performance (só recalcula quando dependências mudam)
+   */
   const filtrados = useMemo(() => {
     if (!busca.trim()) return funcionarios;
     
@@ -142,12 +184,18 @@ function ListaFuncionarios() {
     );
   }, [funcionarios, busca]);
 
+  /**
+   * Função para recarregar lista de funcionários
+   */
   const recarregarFuncionarios = () => {
     carregarFuncionarios();
   };
 
+  /**
+   * Navega para página de edição de um funcionário
+   * @param {number|string} id - ID do funcionário a ser editado
+   */
   const handleEditar = (id) => {
-    console.log('🔄 Tentando editar funcionário ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -157,8 +205,11 @@ function ListaFuncionarios() {
     navigate(`/editarFuncionario/${idNumerico}`);
   };
 
+  /**
+   * Navega para página de detalhes de um funcionário
+   * @param {number|string} id - ID do funcionário
+   */
   const handleDetalhes = (id) => {
-    console.log('👁️ Tentando ver detalhes do funcionário ID:', id, 'Tipo:', typeof id);
     
     const idNumerico = Number(id);
     if (isNaN(idNumerico)) {
@@ -168,10 +219,15 @@ function ListaFuncionarios() {
     navigate(`/detalhesFuncionario/${idNumerico}`);
   };
 
+  /**
+   * Renderiza a página de lista de funcionários
+   */
   return (
     <div className={styles.container}>
+      {/* Componente de navbar para administradores */}
       <NavBarAdm />
 
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Lista de Funcionários</h2>
         <div className={styles.headerActions}>
@@ -189,6 +245,7 @@ function ListaFuncionarios() {
         </div>
       </div>
 
+      {/* Barra superior com busca e botão de cadastro */}
       <div className={styles.topBar}>
         <div className={styles.searchGroup}>
           <input
@@ -200,6 +257,7 @@ function ListaFuncionarios() {
           />
         </div>
 
+        {/* Botão para cadastrar novo funcionário */}
         <button
           className={styles.createButton}
           onClick={() => navigate("/cadastroFuncionario")}
@@ -209,6 +267,7 @@ function ListaFuncionarios() {
         </button>
       </div>
 
+      {/* Conteúdo principal: carregando ou tabela */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <Loading />
@@ -216,6 +275,7 @@ function ListaFuncionarios() {
         </div>
       ) : (
         <>
+          {/* Barra de informações sobre os resultados */}
           <div className={styles.infoBar}>
             <span className={styles.totalFuncionarios}>
               Total: {filtrados.length} funcionário{filtrados.length !== 1 ? 's' : ''}
@@ -227,6 +287,7 @@ function ListaFuncionarios() {
             </span>
           </div>
 
+          {/* Tabela de funcionários */}
           <table className={styles.table}>
             <thead>
               <tr>
@@ -237,6 +298,7 @@ function ListaFuncionarios() {
               </tr>
             </thead>
             <tbody>
+              {/* Linhas para cada funcionário */}
               {filtrados.map((funcionario) => (
                 <tr key={funcionario.id} className={!estaAtivo(funcionario) ? styles.inativo : ''}>
                   <td className={styles.nomeFuncionario}>
@@ -249,6 +311,7 @@ function ListaFuncionarios() {
                     </span>
                   </td>
                   <td className={styles.actionsCell}>
+                    {/* Botão Editar (desabilitado para inativos) */}
                     <button
                       className={styles.editButton}
                       onClick={() => handleEditar(funcionario.id)}
@@ -257,6 +320,7 @@ function ListaFuncionarios() {
                     >
                       Editar
                     </button>
+                    {/* Botão Inativar (apenas para ativos) */}
                     <button
                       className={styles.deleteButton}
                       onClick={() => setConfirmId(funcionario.id)}
@@ -265,6 +329,7 @@ function ListaFuncionarios() {
                     >
                       {estaAtivo(funcionario) ? "Inativar" : "Inativo"}
                     </button>
+                    {/* Botão Detalhes (sempre habilitado) */}
                     <button
                       className={styles.detailsButton}
                       onClick={() => handleDetalhes(funcionario.id)}
@@ -275,6 +340,8 @@ function ListaFuncionarios() {
                   </td>
                 </tr>
               ))}
+              
+              {/* Mensagem para lista vazia */}
               {filtrados.length === 0 && (
                 <tr>
                   <td colSpan={4} className={styles.empty}>
@@ -295,6 +362,7 @@ function ListaFuncionarios() {
         </>
       )}
 
+      {/* Modal de confirmação para exclusão */}
       {confirmId && (
         <ConfirmModal
           message="Deseja realmente marcar este funcionário como inativo? Ele não poderá mais fazer login no sistema."
@@ -303,6 +371,7 @@ function ListaFuncionarios() {
         />
       )}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 

@@ -1,4 +1,5 @@
 // front/src/pages/Produtos/ProdutosAdministrador/EditarProdutos/EditarProdutos.jsx
+
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./EditarProdutos.module.css";
@@ -8,16 +9,39 @@ import { AuthContext } from "../../../../context/AuthContext";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
 
+// URL do backend obtida da variável de ambiente (arquivo .env)
+const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
+
+/**
+ * Componente para edição de produtos existentes
+ * @component
+ * @returns {JSX.Element} Formulário de edição de produto
+ */
 function EditarProdutos() {
+  // Obtém ID do produto da URL
   const { id } = useParams();
+  
+  // Hook para navegação entre páginas
   const navigate = useNavigate();
+  
+  // Obtém token e função de logout do contexto
   const { logout, token } = useContext(AuthContext);
 
+  // Estado para dados do produto
   const [produto, setProduto] = useState(null);
+  
+  // Estado para controlar carregamento inicial
   const [loading, setLoading] = useState(true);
+  
+  // Estado para controlar salvamento de alterações
   const [saving, setSaving] = useState(false);
+  
+  // Estado para mensagens de feedback
   const [message, setMessage] = useState("");
 
+  /**
+   * Efeito para carregar dados do produto quando componente é montado
+   */
   useEffect(() => {
     if (token && id) {
       carregarProduto();
@@ -27,11 +51,16 @@ function EditarProdutos() {
     }
   }, [token, id]);
 
+  /**
+   * Carrega dados do produto do backend
+   * @async
+   */
   const carregarProduto = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:8080/produto/${id}`, {
+      // Requisição GET para obter dados do produto
+      const response = await fetch(`${API_URL}/produto/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -39,9 +68,11 @@ function EditarProdutos() {
         }
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         const produtoData = await response.json();
         
+        // Formata data de validade para input type="date" (YYYY-MM-DD)
         const dataValidade = produtoData.dataValidade 
           ? new Date(produtoData.dataValidade).toISOString().split('T')[0]
           : '';
@@ -64,6 +95,10 @@ function EditarProdutos() {
     }
   };
 
+  /**
+   * Atualiza estado do produto quando campos são alterados
+   * @param {Event} e - Evento de mudança do input
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduto(prev => ({
@@ -72,27 +107,35 @@ function EditarProdutos() {
     }));
   };
 
+  /**
+   * Valida todos os campos do formulário antes do envio
+   * @returns {boolean} true se todos os campos são válidos
+   */
   const validarFormulario = () => {
     const { nome, fabricante, preco, dataValidade } = produto;
 
+    // Validações de campos obrigatórios
     if (!nome || !fabricante || !preco || !dataValidade) {
       setMessage("ERRO: Nome, fabricante, preço e data de validade são obrigatórios");
       return false;
     }
 
+    // Valida comprimento do nome
     if (nome.length > 100) {
       setMessage("ERRO: O nome não pode exceder 100 caracteres");
       return false;
     }
 
+    // Valida valor do preço
     if (parseFloat(preco) <= 0) {
       setMessage("ERRO: O preço deve ser maior que zero");
       return false;
     }
 
+    // Valida data de validade (não pode ser no passado)
     const dataValidadeObj = new Date(dataValidade);
     const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+    hoje.setHours(0, 0, 0, 0); // Zera horas para comparar apenas data
 
     if (dataValidadeObj < hoje) {
       setMessage("ERRO: A data de validade deve ser hoje ou futura");
@@ -102,23 +145,30 @@ function EditarProdutos() {
     return true;
   };
 
+  /**
+   * Salva alterações do produto no backend
+   * @async
+   */
   const salvarProduto = async () => {
+    // Valida formulário antes de enviar
     if (!validarFormulario()) return;
 
     setSaving(true);
     setMessage("");
 
     try {
+      // Prepara dados para envio ao backend
       const dadosParaEnviar = {
         nome: produto.nome.trim(),
         fabricante: produto.fabricante.trim(),
         preco: parseFloat(produto.preco),
         descricao: produto.descricao?.trim() || "Sem descrição",
-        dataValidade: produto.dataValidade + "T00:00:00.000Z",
+        dataValidade: produto.dataValidade + "T00:00:00.000Z", // Formato ISO
         linkImagem: produto.linkImagem?.trim() || ""
       };
 
-      const response = await fetch(`http://localhost:8080/produto/update/${id}`, {
+      // Requisição PUT para atualizar produto
+      const response = await fetch(`${API_URL}/produto/update/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -127,14 +177,17 @@ function EditarProdutos() {
         body: JSON.stringify(dadosParaEnviar)
       });
 
+      // Processa resposta do backend
       if (response.ok) {
         setMessage("SUCESSO: Produto atualizado com sucesso! Redirecionando...");
         
+        // Redireciona para lista após 2 segundos
         setTimeout(() => {
           navigate("/listarProdutos");
         }, 2000);
         
       } else {
+        // Tenta obter mensagem de erro específica
         let errorMessage = `Erro ${response.status}: ${response.statusText}`;
         
         try {
@@ -143,7 +196,7 @@ function EditarProdutos() {
             errorMessage = errorText;
           }
         } catch {
-          // Ignora erro de parse
+          // Ignora erro de parse JSON
         }
         
         setMessage(`ERRO: ${errorMessage}`);
@@ -157,11 +210,18 @@ function EditarProdutos() {
     }
   };
 
+  /**
+   * Retorna data mínima para o input de data (hoje)
+   * @returns {string} Data no formato YYYY-MM-DD
+   */
   const getDataMinima = () => {
     const hoje = new Date();
     return hoje.toISOString().split('T')[0];
   };
 
+  /**
+   * Renderiza estado de carregamento
+   */
   if (loading) {
     return (
       <div className={styles.container}>
@@ -174,6 +234,9 @@ function EditarProdutos() {
     );
   }
 
+  /**
+   * Renderiza estado de produto não encontrado
+   */
   if (!produto) {
     return (
       <div className={styles.container}>
@@ -191,16 +254,23 @@ function EditarProdutos() {
     );
   }
 
+  /**
+   * Renderiza formulário de edição
+   */
   return (
     <div className={styles.container}>
       <NavBarAdm />
+      
+      {/* Cabeçalho da página */}
       <div className={styles.header}>
         <h2 className={styles.title}>Editar Produto</h2>
         <button className={styles.logoutTop} onClick={logout}>Logout</button>
       </div>
 
+      {/* Container principal do formulário */}
       <div className={styles.formWrapper}>
         <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+          {/* Campo: Nome do Produto */}
           <label className={styles.label}>Nome do Produto *</label>
           <input 
             className={styles.input} 
@@ -213,6 +283,7 @@ function EditarProdutos() {
           />
           <span className={styles.hint}>Máximo 100 caracteres</span>
 
+          {/* Campo: Fabricante */}
           <label className={styles.label}>Fabricante *</label>
           <input 
             className={styles.input} 
@@ -223,6 +294,7 @@ function EditarProdutos() {
             required
           />
 
+          {/* Linha com preço e data de validade lado a lado */}
           <div className={styles.row}>
             <div>
               <label className={styles.label}>Preço (R$) *</label>
@@ -255,6 +327,7 @@ function EditarProdutos() {
             </div>
           </div>
 
+          {/* Campo: Descrição (textarea) */}
           <label className={styles.label}>Descrição</label>
           <textarea 
             className={styles.textarea} 
@@ -267,6 +340,7 @@ function EditarProdutos() {
           />
           <span className={styles.hint}>Máximo 255 caracteres</span>
 
+          {/* Campo: Link da Imagem (URL) */}
           <label className={styles.label}>Link da Imagem (URL)</label>
           <input 
             className={styles.input} 
@@ -278,6 +352,7 @@ function EditarProdutos() {
           />
           <span className={styles.hint}>Opcional - URL da imagem do produto</span>
 
+          {/* Preview da imagem se URL for fornecida */}
           {produto.linkImagem && (
             <div className={styles.preview}>
               <span className={styles.previewLabel}>Preview da imagem:</span>
@@ -292,6 +367,7 @@ function EditarProdutos() {
             </div>
           )}
 
+          {/* Botões de ação do formulário */}
           <div className={styles.actions}>
             <button 
               type="button" 
@@ -313,8 +389,10 @@ function EditarProdutos() {
         </form>
       </div>
 
+      {/* Componente de loading durante salvamento */}
       {saving && <Loading />}
 
+      {/* Componente de mensagem para feedback */}
       {message && (
         <MessageBox 
           message={message} 
