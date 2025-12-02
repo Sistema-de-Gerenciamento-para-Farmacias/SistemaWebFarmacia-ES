@@ -57,6 +57,9 @@ http://localhost:5173
 Este projeto está organizado nas seguintes pastas:
 ## Estrutura de Pastas
 
+### **Front-End (`front/`)**
+
+
 * **`front/`**: Contém o código-fonte da aplicação **Front-End** (React).
   * **`front/src/`**: Código principal da interface.
     * **`front/src/assets/`**: Recursos visuais (imagens, ícones).
@@ -67,17 +70,7 @@ Este projeto está organizado nas seguintes pastas:
     * **`front/src/utils/`**: Funções auxiliares.
   * **`front/public/`**: Arquivos estáticos e HTML inicial.
 
-
-*   **`back/`**: Contém o código-fonte da aplicação **Back-End** (Spring Boot).
-    *   **`back/src/`**: Código principal da API e regras de negócio.
-    *   **`back/config/`**: Arquivos de configuração do servidor e banco de dados.
-
-*   **`Padroes Adotados/`**: Documentação dos **padrões adotados** no projeto.
-
-*   **`Requisitos/`**: Documentação dos **requisitos do sistema**.
-
-
-### 📁 **Back-End (`back/`)**
+### **Back-End (`back/`)**
 
 O **Back-End** é desenvolvido em **Spring Boot** e contém toda a lógica de negócio e acesso ao banco de dados.
 
