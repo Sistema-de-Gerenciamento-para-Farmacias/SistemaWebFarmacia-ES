@@ -77,32 +77,51 @@ Este projeto está organizado nas seguintes pastas:
 *   **`Requisitos/`**: Documentação dos **requisitos do sistema**.
 
 
-**Back-End**
 ### 📁 **Back-End (`back/`)**
 
-* **`back/`**: Contém o código-fonte da aplicação **Back-End** desenvolvida com **Spring Boot**.
-  * **`back/src/`**: Código principal da API e regras de negócio.
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/controller/`**  
-      Controladores responsáveis por receber as requisições HTTP e encaminhar para a camada de serviço.
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/data/dto/request/`**  
-      DTOs de **entrada** (dados enviados pelo cliente).
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/data/dto/response/`**  
-      DTOs de **saída** (dados retornados nas respostas da API).
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/entity/`**  
-      Entidades JPA que representam as tabelas do banco de dados.
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/repository/`**  
-      Interfaces do **Spring Data JPA** responsáveis pelo acesso ao banco de dados.
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/service/`**  
-      Regras de negócio e lógica da aplicação.
-    * **`back/src/main/java/com/br/farmacia/apiFarmacia/Startup.java`**  
-      Classe principal da aplicação Spring Boot.
-  * **`back/src/resources/`**  
-    Arquivos de configuração, templates e propriedades da aplicação.
-  * **`back/src/test/`**  
-    Testes unitários e de integração do projeto.
-* **`back/config/`**  
-  Configurações do servidor, banco de dados e propriedades adicionais da aplicação.
+O **Back-End** é desenvolvido em **Spring Boot** e contém toda a lógica de negócio e acesso ao banco de dados.
 
+* **`back/`**: Código-fonte do Back-End.  
+  * **`back/src/main/java/com/br/farmacia/apiFarmacia/`**  
+    Código principal da API, organizado em pacotes:
+
+    **Pacotes e suas responsabilidades:**
+    
+    * **`controller/`**  
+      Controladores responsáveis por receber as requisições HTTP e encaminhar para a camada de serviço.
+      
+    * **`data/dto/request/`**  
+      DTOs de **entrada**, usados para receber dados enviados pelo cliente.
+      
+    * **`data/dto/response/`**  
+      DTOs de **saída**, usados para enviar dados de volta nas respostas da API.
+      
+    * **`entity/`**  
+      Entidades JPA que representam as tabelas do banco de dados.
+      
+    * **`repository/`**  
+      Interfaces do **Spring Data JPA** responsáveis pelo acesso e manipulação dos dados no banco.
+      
+    * **`service/`**  
+      Contém a lógica de negócio e regras do sistema, servindo de ponte entre os controladores e os repositórios.
+      
+    * **`config/`**  
+      Contém configurações gerais do Spring Boot, incluindo:
+        - **`SecurityConfig`**: Define a autenticação e autorização do sistema, controlando o acesso de usuários e suas permissões.
+      
+    * **`infra/config/`**  
+      Configurações de infraestrutura adicionais, incluindo:
+        - **`CorsConfig`**: Define regras de **CORS (Cross-Origin Resource Sharing)**, permitindo que o Front-End acesse a API de forma segura mesmo estando em domínios diferentes.
+      
+    * **`Startup.java`**  
+      Classe principal que inicializa a aplicação Spring Boot.
+
+  * **`back/src/resources/`**  
+    Arquivos de configuração, templates e propriedades da aplicação, como `application.properties` ou `application.yml`.
+
+  * **`back/src/test/`**  
+    Testes unitários e de integração do projeto, garantindo que a aplicação funcione corretamente.
+    
 ### 👥 Membros da Equipe
 -	Matheus Gomes Monteiro, 202410369
 -	Gustavo Alessandro De Souza Sabino, 202411214
