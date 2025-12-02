@@ -1,0 +1,88 @@
+.container {
+  margin-top: 30px;
+  padding: 80px 20px 20px 20px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Título */
+.titulo {
+  margin: 0 0 25px 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0055ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Subtítulo */
+.subtitulo {
+  margin: 20px 0 10px 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Caixa de informações */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.infoItem {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.infoItem strong {
+  color: #000;
+}
+
+/* Tabela */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.tabela thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.tabela th {
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+}
+
+.tabela td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Total */
+.total {
+  text-align: right;
+  padding: 15px 30px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 400px;
+  color: #000000;
+}

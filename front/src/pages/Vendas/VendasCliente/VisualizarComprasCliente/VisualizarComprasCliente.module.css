@@ -1,0 +1,208 @@
+.container {
+  margin-top: 30px;
+  padding: 80px 20px 20px 20px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+}
+
+.titulo {
+  margin-bottom: 25px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0055ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Barra de busca - corrigida para ficar igual outras telas */
+.searchBar {
+  margin-bottom: 30px;
+  max-width: 600px;
+}
+
+.searchBar input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: #0055ff;
+}
+
+.infoCompra {
+  margin-bottom: 15px;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+}
+
+.vazio {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.vazio h3 {
+  font-size: 1.5rem;
+  color: #495057;
+  margin-bottom: 10px;
+}
+
+.vazio p {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 25px;
+}
+
+.btnComprar {
+  background: #0055ff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btnComprar:hover {
+  background: #0044cc;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  table-layout: fixed; /* CORREÇÃO: Força layout fixo */
+}
+
+.tabela thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.tabela th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.tabela td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle; /* CORREÇÃO: Alinha verticalmente */
+}
+
+.tabela tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* CORREÇÃO: Larguras específicas para cada coluna */
+.tabela th:nth-child(1), /* ID */
+.tabela td:nth-child(1) {
+  width: 15%;
+  text-align: center;
+}
+
+.tabela th:nth-child(2), /* Data */
+.tabela td:nth-child(2) {
+  width: 20%;
+  text-align: center;
+}
+
+.tabela th:nth-child(3), /* Qtd. Itens */
+.tabela td:nth-child(3) {
+  width: 20%;
+  text-align: center;
+}
+
+.tabela th:nth-child(4), /* Status */
+.tabela td:nth-child(4) {
+  width: 20%;
+  text-align: center;
+}
+
+.tabela th:nth-child(5), /* Ação */
+.tabela td:nth-child(5) {
+  width: 25%;
+  text-align: center;
+}
+
+.idVenda {
+  font-weight: 600;
+  color: #0055ff;
+}
+
+.data {
+  color: #495057;
+}
+
+.quantidade {
+  color: #6c757d;
+}
+
+.status {
+  text-align: center;
+}
+
+.ativa {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.excluida {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* Botão Ver Detalhes - corrigido com cor e alinhamento */
+.btnDetalhes {
+  background: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  display: inline-block;
+  text-align: center;
+}
+
+.btnDetalhes:hover:not(:disabled) {
+  background: #0044cc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 85, 255, 0.3);
+}
+
+.btnDetalhes:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}

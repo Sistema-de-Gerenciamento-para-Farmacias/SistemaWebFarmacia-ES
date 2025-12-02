@@ -1,0 +1,346 @@
+/* front/src/pages/Produtos/ProdutosAdministrador/ListarProdutos/ListarProdutos.module.css */
+.container {
+  margin-left: 200px;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.reloadButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.reloadButton:hover:not(:disabled) {
+  background: #218838;
+}
+
+.reloadButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.logoutTop {
+  background-color: white;
+  color: #0055ff;
+  border: 1px solid #0055ff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.logoutTop:hover {
+  background-color: #0099ff;
+  color: white;
+  border-color: #0099ff;
+}
+
+/* Barra de pesquisa */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 20px 0;
+  align-items: center;
+}
+
+.searchGroup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 8px;
+  max-width: 500px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.searchInput {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  background: transparent;
+}
+
+.createButton {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.createButton:hover {
+  background-color: #4d8dff;
+}
+
+/* Barra de informações */
+.infoBar {
+  margin-bottom: 15px;
+  padding: 10px 0;
+}
+
+.totalProdutos {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.loadingContainer p {
+  margin-top: 15px;
+  color: #666;
+}
+
+/* Tabela */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table th,
+.table td {
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.produtoImg {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  padding: 4px;
+  transition: transform 0.2s;
+}
+
+.produtoImg:hover {
+  transform: scale(1.05);
+}
+
+.nomeProduto {
+  text-align: left;
+  max-width: 200px;
+}
+
+.nomeWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.descricaoTooltip {
+  cursor: help;
+  font-size: 0.8rem;
+  opacity: 0.6;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.descricaoTooltip:hover {
+  background: #e9ecef;
+}
+
+.preco {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 1rem;
+}
+
+.dataValidade {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.acoes {
+  width: 180px;
+}
+
+.actionsCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+/* Botões de ação */
+.editButton {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.editButton:hover:not(:disabled) {
+  background-color: #4d8dff;
+  transform: translateY(-1px);
+}
+
+.editButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.detailsButton {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.detailsButton:hover {
+  background-color: #e5a361;
+  transform: translateY(-1px);
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: #666;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.cadastrarPrimeiroBtn {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.cadastrarPrimeiroBtn:hover {
+  background-color: #4d8dff;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    margin-left: 0;
+    padding: 10px;
+  }
+  
+  .topBar {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .searchGroup {
+    max-width: 100%;
+  }
+  
+  .actionsCell {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .nomeWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

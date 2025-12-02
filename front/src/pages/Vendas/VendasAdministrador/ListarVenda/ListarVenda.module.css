@@ -1,0 +1,354 @@
+/* front/src/pages/Vendas/VendasAdministrador/ListarVenda/ListarVenda.module.css */
+.container {
+  margin-left: 200px;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.reloadButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.reloadButton:hover:not(:disabled) {
+  background: #218838;
+}
+
+.reloadButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.createButton {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.createButton:hover {
+  background-color: #4d8dff;
+}
+
+.logoutTop {
+  background-color: white;
+  color: #0055ff;
+  border: 1px solid #0055ff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.logoutTop:hover {
+  background-color: #0099ff;
+  color: white;
+  border-color: #0099ff;
+}
+
+/* Barra de pesquisa */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 20px 0;
+  align-items: center;
+}
+
+.searchGroup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 8px;
+  max-width: 500px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.searchInput {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  background: transparent;
+}
+
+/* Barra de informações */
+.infoBar {
+  margin-bottom: 15px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.totalVendas {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.statusInfo {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.valorTotal {
+  font-size: 0.85rem;
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.loadingContainer p {
+  margin-top: 15px;
+  color: #666;
+}
+
+/* Tabela */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table th,
+.table td {
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.table tbody tr.inativo {
+  background-color: #f8f9fa;
+  opacity: 0.7;
+}
+
+.table tbody tr.inativo:hover {
+  background-color: #e9ecef;
+}
+
+.idVenda {
+  font-weight: 600;
+  color: #0055ff;
+}
+
+.nomeCliente {
+  font-weight: 600;
+  color: #333;
+  text-align: left;
+}
+
+.data {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.valor {
+  font-weight: 600;
+  color: #28a745;
+  font-size: 0.95rem;
+}
+
+.status {
+  font-weight: 500;
+}
+
+.statusAtivo {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.statusInativo {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.acoes {
+  width: 220px;
+}
+
+.actionsCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+/* Botões de ação */
+.editButton {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.editButton:hover:not(:disabled) {
+  background-color: #4d8dff;
+  transform: translateY(-1px);
+}
+
+.editButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.detailsButton {
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.detailsButton:hover {
+  background-color: #e5a361;
+  transform: translateY(-1px);
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.deleteButton:disabled {
+  background-color: #6c757d;
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: #666;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    margin-left: 0;
+    padding: 10px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .headerActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .topBar {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .searchGroup {
+    max-width: 100%;
+  }
+  
+  .infoBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .actionsCell {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .table {
+    font-size: 0.8rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 8px 4px;
+  }
+}

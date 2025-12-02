@@ -1,0 +1,205 @@
+.container {
+  margin-top: 30px;
+  padding: 100px 20px 40px 20px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+}
+
+.card {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.imageSection {
+  flex: 1;
+  min-width: 300px;
+  max-width: 300px;
+  height: 300px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.imageSection img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.detalhes {
+  flex: 2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nome {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.preco {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #0055ff;
+  margin: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infoItem {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.infoItem strong {
+  font-weight: bold;
+  color: #444;
+  display: inline-block;
+  min-width: 120px;
+}
+
+.compra {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.pergunta {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.quantidadeInput {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantidadeInput label {
+  font-weight: bold;
+  color: #333;
+}
+
+.quantidadeInput input {
+  width: 80px;
+  height: 40px;
+  text-align: center;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.quantidadeInput input:focus {
+  border-color: #0055ff;
+}
+
+.btnAdicionar {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  transition: background-color 0.3s ease;
+}
+
+.btnAdicionar:hover {
+  background-color: #0044cc;
+}
+
+.indisponivel {
+  padding: 20px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.indisponivel p {
+  margin: 0;
+  color: #856404;
+  font-weight: 500;
+}
+
+.loadingContainer, .errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.btnVoltar {
+  background-color: #0055ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.btnVoltar:hover {
+  background-color: #0044cc;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 80px 15px 20px 15px;
+  }
+  
+  .card {
+    flex-direction: column;
+    padding: 20px;
+    gap: 25px;
+  }
+  
+  .imageSection {
+    min-width: auto;
+    max-width: 100%;
+    height: 250px;
+  }
+  
+  .nome {
+    font-size: 1.8rem;
+  }
+  
+  .preco {
+    font-size: 1.6rem;
+  }
+}
