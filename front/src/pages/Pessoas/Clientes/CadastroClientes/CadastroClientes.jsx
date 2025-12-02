@@ -6,6 +6,11 @@ import styles from "./CadastroClientes.module.css";
 import BotaoRetorno from "../../../../components/BotaoRetorno/BotaoRetorno";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
+import {
+  validarCamposCliente,
+  formatarCPF,
+  formatarTelefone
+} from "../../../../utils/validations";
 
 // URL do backend obtida da variável de ambiente (arquivo .env)
 const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
@@ -48,40 +53,11 @@ function CadastroClientes() {
    * @returns {boolean} True se todos os campos são válidos
    */
   const validarCampos = () => {
-    // Valida campos obrigatórios
-    if (!formData.nome || !formData.email || !formData.senha || !formData.cpf || !formData.telefone) {
-      setMessage("ERRO: você deve preencher todos os campos");
+    const validacao = validarCamposCliente(formData);
+    if (!validacao.valido) {
+      setMessage(validacao.mensagem);
       return false;
     }
-
-    // Remove formatação para validação numérica
-    const cpfNumerico = formData.cpf.replace(/\D/g, '');
-    const telefoneNumerico = formData.telefone.replace(/\D/g, '');
-
-    // Validações específicas usando expressões regulares
-    const cpfOK = /^\d{11}$/.test(cpfNumerico);
-    const telOK = /^\d{10,11}$/.test(telefoneNumerico);
-    const emailOK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-    const senhaOK = formData.senha.length >= 3;
-
-    // Mensagens específicas para cada erro de validação
-    if (!cpfOK) {
-      setMessage("ERRO: CPF deve ter 11 dígitos");
-      return false;
-    }
-    if (!telOK) {
-      setMessage("ERRO: Telefone deve ter 10 ou 11 dígitos");
-      return false;
-    }
-    if (!emailOK) {
-      setMessage("ERRO: Email inválido");
-      return false;
-    }
-    if (!senhaOK) {
-      setMessage("ERRO: Senha deve ter pelo menos 3 caracteres");
-      return false;
-    }
-
     return true;
   };
 
@@ -175,34 +151,6 @@ function CadastroClientes() {
       // Finaliza estado de carregamento independente do resultado
       setLoading(false);
     }
-  };
-
-  /**
-   * Formata CPF durante a digitação: 12345678901 -> 123.456.789-01
-   * @param {string} value - CPF sem formatação
-   * @returns {string} CPF formatado
-   */
-  const formatarCPF = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    }
-    return value;
-  };
-
-  /**
-   * Formata telefone durante a digitação: 11999998888 -> (11) 99999-8888
-   * @param {string} value - Telefone sem formatação
-   * @returns {string} Telefone formatado
-   */
-  const formatarTelefone = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length === 11) {
-      return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    } else if (numbers.length === 10) {
-      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    }
-    return value;
   };
 
   /**

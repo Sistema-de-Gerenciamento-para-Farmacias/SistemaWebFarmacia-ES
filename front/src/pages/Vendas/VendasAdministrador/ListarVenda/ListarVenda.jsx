@@ -265,15 +265,6 @@ function ListarVenda() {
             Atualizar
           </button>
           
-          {/* Botão para criar nova venda */}
-          <button 
-            className={styles.createButton}
-            onClick={handleNovaVenda}
-            title="Nova Venda"
-          >
-            Nova Venda
-          </button>
-          
           {/* Botão de logout */}
           <button className={styles.logoutTop} onClick={logout}>
             Logout

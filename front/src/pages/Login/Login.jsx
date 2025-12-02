@@ -101,6 +101,7 @@ function Login() {
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Campo de email */}
           <input 
+            name="email" 
             type="email" 
             placeholder="Email" 
             value={email} 
@@ -111,6 +112,7 @@ function Login() {
           
           {/* Campo de senha */}
           <input 
+            name="senha" 
             type="password" 
             placeholder="Senha" 
             value={senha} 

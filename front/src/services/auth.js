@@ -2,7 +2,8 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-const API_URL = 'http://localhost:8080';
+// Usa a variável de ambiente com fallback para localhost:8080
+const API_URL = import.meta.env.VITE_URL_BACKEND || 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: API_URL,

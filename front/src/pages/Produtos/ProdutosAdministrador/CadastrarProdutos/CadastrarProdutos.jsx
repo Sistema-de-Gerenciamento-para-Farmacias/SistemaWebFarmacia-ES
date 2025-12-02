@@ -8,6 +8,10 @@ import NavBarAdm from "../../../../components/NavBarAdm/NavBarAdm";
 import { AuthContext } from "../../../../context/AuthContext";
 import MessageBox from "../../../../components/MessageBox/MessageBox";
 import Loading from "../../../../components/Loading/Loading";
+import {
+  validarFormularioProduto,
+  getDataMinima
+} from "../../../../utils/validations";
 
 // URL do backend obtida da variável de ambiente (arquivo .env)
 const API_URL = import.meta.env.VITE_URL_BACKEND || "http://localhost:8080";
@@ -57,42 +61,11 @@ function CadastrarProdutos() {
    * @returns {boolean} true se todos os campos são válidos
    */
   const validarFormulario = () => {
-    const { nome, fabricante, preco, dataValidade, linkImagem } = formData;
-
-    // Valida campos obrigatórios
-    if (!nome || !fabricante || !preco || !dataValidade) {
-      setMessage("ERRO: Nome, fabricante, preço e data de validade são obrigatórios");
+    const validacao = validarFormularioProduto(formData);
+    if (!validacao.valido) {
+      setMessage(validacao.mensagem);
       return false;
     }
-
-    // Valida comprimento máximo do nome
-    if (nome.length > 100) {
-      setMessage("ERRO: O nome não pode exceder 100 caracteres");
-      return false;
-    }
-
-    // Valida valor do preço
-    if (parseFloat(preco) <= 0) {
-      setMessage("ERRO: O preço deve ser maior que zero");
-      return false;
-    }
-
-    // Valida comprimento do link da imagem
-    if (linkImagem && linkImagem.length > 255) {
-      setMessage("ERRO: O link da imagem não pode exceder 255 caracteres");
-      return false;
-    }
-
-    // Valida data de validade (não pode ser no passado)
-    const dataValidadeObj = new Date(dataValidade);
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    if (dataValidadeObj < hoje) {
-      setMessage("ERRO: A data de validade deve ser hoje ou futura");
-      return false;
-    }
-
     return true;
   };
 
@@ -173,15 +146,6 @@ function CadastrarProdutos() {
       // Finaliza estado de carregamento independente do resultado
       setLoading(false);
     }
-  };
-
-  /**
-   * Retorna a data mínima permitida para validade (hoje)
-   * @returns {string} Data no formato YYYY-MM-DD
-   */
-  const getDataMinima = () => {
-    const hoje = new Date();
-    return hoje.toISOString().split('T')[0];
   };
 
   /**

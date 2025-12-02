@@ -250,7 +250,7 @@ function ListaFuncionarios() {
         <div className={styles.searchGroup}>
           <input
             type="text"
-            placeholder="Buscar por nome ou CPF..."
+            placeholder="Buscar por CPF..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className={styles.searchInput}
