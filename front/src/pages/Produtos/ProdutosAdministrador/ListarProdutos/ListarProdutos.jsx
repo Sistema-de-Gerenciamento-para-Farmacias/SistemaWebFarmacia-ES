@@ -23,7 +23,10 @@ function ListarProdutos() {
   const navigate = useNavigate();
   
   // Obtém token e função de logout do contexto
-  const { logout, token } = useContext(AuthContext);
+  const { logout, token, user } = useContext(AuthContext);
+
+  // Verifica se o usuário é administrador
+  const isAdmin = user?.tipoUsuario === 'ADMIN';
 
   // Estado para lista de produtos
   const [produtos, setProdutos] = useState([]);
@@ -303,14 +306,17 @@ function ListarProdutos() {
                     >
                       Editar
                     </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => setConfirmId(produto.idProduto)}
-                      title="Excluir"
-                      disabled={deletingId === produto.idProduto}
-                    >
-                      Excluir
-                    </button>
+                    {/* BOTÃO EXCLUIR - APENAS PARA ADMINISTRADORES */}
+                    {isAdmin && (
+                      <button
+                        className={styles.deleteButton}
+                        onClick={() => setConfirmId(produto.idProduto)}
+                        title="Excluir"
+                        disabled={deletingId === produto.idProduto}
+                      >
+                        Excluir
+                      </button>
+                    )}
                     <button
                       className={styles.detailsButton}
                       onClick={() => navigate(`/detalhesProduto/${produto.idProduto}`)}
